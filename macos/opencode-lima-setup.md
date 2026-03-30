@@ -54,6 +54,8 @@ cd agentex/macos
 - install system dependencies via `dnf` (`ripgrep`, `fd-find`, `jq`, build tools, `curl`, `openssh-clients`)
 - install `mise` (if missing)
 - install/update global tools via `mise` (`opencode`, `ruby`, `go`, `starship`)
+- configure Ruby in `mise` to prefer precompiled binaries (`ruby.compile=false`)
+- install OpenCode templates in home (`~/opencode.json`, `~/AGENTS.md`, `~/.opencode/*`)
 - configure global git (`user.email`, `user.name`, default branch)
 - generate a dedicated VM SSH key for GitHub and print the public key for copy/paste
 - configure `~/.bashrc` with agent shell marker prompt setup

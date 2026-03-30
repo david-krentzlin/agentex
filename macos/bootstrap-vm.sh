@@ -13,6 +13,8 @@ set -euo pipefail
 BASHRC="$HOME/.bashrc"
 STARSHIP_CONFIG_PATH="$HOME/.config/starship-agent.toml"
 STARSHIP_CONFIGURED=0
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEMPLATES_DIR="$SCRIPT_DIR/templates"
 GIT_EMAIL="${1:-}"
 GIT_NAME="${2:-${USER:-Agent VM}}"
 SSH_KEY_PATH="$HOME/.ssh/id_ed25519_agent_vm"
@@ -95,8 +97,24 @@ setup_mise() {
 }
 
 setup_tools() {
+  echo "Configuring mise Ruby to prefer precompiled binaries..."
+  "$MISE_BIN" settings ruby.compile=false
+
   echo "Installing global tools via mise (opencode, ruby, go, starship)..."
   "$MISE_BIN" use -g opencode@latest ruby@latest go@latest starship@latest
+}
+
+setup_opencode_config() {
+  if [[ ! -d "$TEMPLATES_DIR" ]]; then
+    echo "Error: templates directory not found at '$TEMPLATES_DIR'" >&2
+    exit 1
+  fi
+
+  echo "Installing OpenCode templates into home directory..."
+  cp "$TEMPLATES_DIR/AGENTS.md" "$HOME/AGENTS.md"
+  cp "$TEMPLATES_DIR/opencode.json" "$HOME/opencode.json"
+  mkdir -p "$HOME/.opencode"
+  cp -R "$TEMPLATES_DIR/dot-opencode/." "$HOME/.opencode/"
 }
 
 setup_git() {
@@ -163,10 +181,11 @@ STARSHIP
   STARSHIP_CONFIGURED=1
 }
 
-echo "Bootstrapping VM tools, git, ssh, and shell markers..."
+echo "Bootstrapping VM tools, OpenCode config, git, ssh, and shell markers..."
 setup_system_dependencies
 setup_mise
 setup_tools
+setup_opencode_config
 setup_git
 setup_ssh
 setup_agent_shell
@@ -179,6 +198,7 @@ else
 fi
 
 echo "Open a new shell or run: source ~/.bashrc"
+echo "OpenCode config installed in home: ~/opencode.json, ~/AGENTS.md, ~/.opencode/"
 echo "Add this SSH public key to GitHub (Settings -> SSH and GPG keys):"
 echo "File: ${SSH_KEY_PATH}.pub"
 echo "----- BEGIN PUBLIC KEY -----"
