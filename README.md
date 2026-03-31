@@ -6,7 +6,7 @@ The goal is simple: keep your host machine clean, run coding agents inside an is
 
 ## Quickstart
 
-Currently only MacOS is supported. Pure linux setup will follow with a similar architecture.
+Currently only the host bootstrap is macOS-specific. The OpenCode config in `templates/dot-config/opencode/` is shared across systems. Pure Linux setup will follow with a similar architecture.
 
 See [MACOS Instructions](/macos/opencode-lima-setup.md) for details.
 
@@ -17,14 +17,15 @@ Host sharing is off by default. If you want to edit a project on the host while 
 ```text
 .
 ├── README.md
+├── templates
+│   └── dot-config
+│       └── opencode
+│           ├── AGENTS.md
+│           ├── commands
+│           ├── opencode.json
+│           └── skills
 └── macos
     ├── bootstrap-host.sh
     ├── bootstrap-vm.sh
-    ├── opencode-lima-setup.md
-    └── templates
-        ├── AGENTS.md
-        ├── opencode.json
-        └── dot-opencode
-            ├── commands
-            └── skills
+    └── opencode-lima-setup.md
 ```

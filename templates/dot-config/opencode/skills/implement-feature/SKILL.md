@@ -33,4 +33,3 @@ If the commit fails because hooks or signing rules reject it, report the failure
 
 * short git log of the commits
 - any remaining unstaged or untracked changes that were left alone
-

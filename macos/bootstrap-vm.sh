@@ -16,7 +16,8 @@ STARSHIP_CONFIG_PATH="$HOME/.config/starship-agent.toml"
 OPENCODE_CONFIG_DIR="$HOME/.config/opencode"
 STARSHIP_CONFIGURED=0
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEMPLATES_DIR="$SCRIPT_DIR/templates"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+OPENCODE_TEMPLATES_DIR="$REPO_ROOT/templates/dot-config/opencode"
 GIT_EMAIL="${1:-}"
 GIT_NAME="${2:-${USER:-Agent VM}}"
 SSH_KEY_PATH="$HOME/.ssh/id_ed25519_agent_vm"
@@ -108,16 +109,14 @@ setup_tools() {
 }
 
 setup_opencode_config() {
-	if [[ ! -d "$TEMPLATES_DIR" ]]; then
-		echo "Error: templates directory not found at '$TEMPLATES_DIR'" >&2
+	if [[ ! -d "$OPENCODE_TEMPLATES_DIR" ]]; then
+		echo "Error: OpenCode templates directory not found at '$OPENCODE_TEMPLATES_DIR'" >&2
 		exit 1
 	fi
 
 	echo "Installing OpenCode templates into ~/.config/opencode..."
 	mkdir -p "$OPENCODE_CONFIG_DIR"
-	cp "$TEMPLATES_DIR/AGENTS.md" "$OPENCODE_CONFIG_DIR/AGENTS.md"
-	cp "$TEMPLATES_DIR/opencode.json" "$OPENCODE_CONFIG_DIR/opencode.json"
-	cp -R "$TEMPLATES_DIR/dot-opencode/." "$OPENCODE_CONFIG_DIR/"
+	cp -R "$OPENCODE_TEMPLATES_DIR/." "$OPENCODE_CONFIG_DIR/"
 }
 
 setup_git() {

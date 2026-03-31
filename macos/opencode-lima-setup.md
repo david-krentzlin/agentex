@@ -90,10 +90,12 @@ cd agentex/macos
 - install `mise` (if missing)
 - install/update global tools via `mise` (`opencode`, `ruby`, `go`, `starship`)
 - configure Ruby in `mise` to prefer precompiled binaries (`ruby.compile=false`)
-- install OpenCode templates in `~/.config/opencode/` (`opencode.json`, `AGENTS.md`, `commands/*`, `skills/*`)
+- install the shared OpenCode templates from `templates/dot-config/opencode/` into `~/.config/opencode/` (`opencode.json`, `AGENTS.md`, `commands/*`, `skills/*`)
 - configure global git (`user.email`, `user.name`, default branch)
 - generate a dedicated VM SSH key for GitHub and print the public key for copy/paste
 - configure `~/.bashrc` with agent shell marker prompt setup
+
+The OpenCode config itself is not macOS-specific. Only the host-side Lima bootstrap in this guide is.
 
 Optional host aliases (run on macOS host):
 
