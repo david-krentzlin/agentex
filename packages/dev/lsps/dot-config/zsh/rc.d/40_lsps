@@ -1,0 +1,5 @@
+if [[ -d /usr/local/share/mise/bin ]]; then
+	PATH="/usr/local/share/mise/bin:$PATH"
+fi
+
+export PATH="$HOME/.local/bin:$PATH"

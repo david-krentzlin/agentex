@@ -2,6 +2,47 @@
 
 **macOS → Lima (isolated Fedora VM) → OpenCode → GPT-5.4**
 
+## Preferred Flow
+
+The repository is moving to a split bootstrap model:
+
+- `bootstrap/host/macos.sh`
+- `bootstrap/vm/macos-create-fedora.sh`
+- `bootstrap/dev/fedora-system.sh`
+- `bootstrap/dev/fedora-user.sh`
+- `bootstrap/agent/create-user.sh`
+- `bootstrap/agent/fedora-user.sh`
+
+Preferred macOS flow:
+
+```bash
+git clone git@github.com:david-krentzlin/agentex.git
+cd agentex
+./bootstrap/host/macos.sh
+./bootstrap/vm/macos-create-fedora.sh
+limactl shell --workdir /home/lima.guest dev
+```
+
+Then inside the VM:
+
+```bash
+sudo dnf install -y git
+git clone git@github.com:david-krentzlin/agentex.git
+cd agentex
+sudo ./bootstrap/dev/fedora-system.sh
+./bootstrap/dev/fedora-user.sh
+sudo ./bootstrap/agent/create-user.sh
+```
+
+Clone the repository again as the `agent` user and run:
+
+```bash
+./bootstrap/agent/fedora-user.sh
+```
+
+The rest of this document describes the older single-user bootstrap flow under
+`macos/`. It is still present, but it is now legacy.
+
 ---
 
 ## Lima (Isolated)
@@ -20,7 +61,7 @@ Why this is isolated:
 - `--mount-none` removes host directory mounts.
 - `--plain` disables Lima integration features (mounts/forwards/containerd defaults), reducing host coupling.
 
-Optional shared workspace mount:
+Optional legacy shared workspace mount:
 
 Host sharing is off by default. If you want to edit code on the macOS host while the agent works on the same tree inside the VM, `bootstrap-host.sh` can create or update the Lima instance with a writable mount at `~/Code`:
 
@@ -74,6 +115,8 @@ limactl start --name=dev --plain --mount-none template:fedora
 ---
 
 ## Setup the agent
+
+Legacy single-user flow:
 
 Only do this once to setup the VM environment:
 

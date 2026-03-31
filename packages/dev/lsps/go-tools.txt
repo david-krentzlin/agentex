@@ -1,0 +1,2 @@
+# Go-based tools
+golang.org/x/tools/gopls@latest

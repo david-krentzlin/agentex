@@ -1,0 +1,4 @@
+alias ,agent-vm-shell='limactl shell --workdir /home/lima.guest dev'
+alias ,agent-vm-start='limactl start dev'
+alias ,agent-vm-stop='limactl stop dev'
+alias ,agent-vm-status='limactl list'

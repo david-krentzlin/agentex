@@ -1,0 +1,12 @@
+# Shared user config
+common/git
+common/zsh
+common/starship
+dev/fedora-base
+dev/mise
+dev/runtimes
+dev/lsps
+
+# Agent overlays
+agent/opencode
+agent/shell-marker

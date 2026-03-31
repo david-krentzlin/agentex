@@ -7,6 +7,12 @@ set -euo pipefail
 # Usage:
 #   ./bootstrap-vm.sh <git-email> [git-name]
 #
+# Preferred flow for the new split setup:
+#   ../bootstrap/dev/fedora-system.sh
+#   ../bootstrap/dev/fedora-user.sh
+#   ../bootstrap/agent/create-user.sh
+#   ../bootstrap/agent/fedora-user.sh
+#
 # Prerequisites (inside the Lima VM):
 #   sudo dnf install -y git
 #   echo 'export OPENAI_API_KEY="sk-..."' >> ~/.bashrc && source ~/.bashrc
@@ -17,7 +23,7 @@ OPENCODE_CONFIG_DIR="$HOME/.config/opencode"
 STARSHIP_CONFIGURED=0
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-OPENCODE_TEMPLATES_DIR="$REPO_ROOT/templates/dot-config/opencode"
+OPENCODE_TEMPLATES_DIR="$REPO_ROOT/packages/agent/opencode/dot-config/opencode"
 GIT_EMAIL="${1:-}"
 GIT_NAME="${2:-${USER:-Agent VM}}"
 SSH_KEY_PATH="$HOME/.ssh/id_ed25519_agent_vm"
@@ -184,6 +190,8 @@ STARSHIP
 }
 
 echo "Bootstrapping VM tools, OpenCode config, git, ssh, and shell markers..."
+echo "Note: macos/bootstrap-vm.sh is now a legacy single-user bootstrap."
+echo "Preferred split flow lives under bootstrap/dev and bootstrap/agent."
 setup_system_dependencies
 setup_mise
 setup_tools

@@ -1,0 +1,15 @@
+if [[ -z "${MISE_SYSTEM_DATA_DIR:-}" && -d /usr/local/share/mise ]]; then
+	export MISE_SYSTEM_DATA_DIR=/usr/local/share/mise
+fi
+
+if [[ -d /usr/local/share/mise/bin ]]; then
+	PATH="/usr/local/share/mise/bin:$PATH"
+fi
+
+if [[ -d /usr/local/share/mise/shims ]]; then
+	PATH="/usr/local/share/mise/shims:$PATH"
+fi
+
+if [[ -d "$HOME/.local/share/mise/shims" ]]; then
+	PATH="$HOME/.local/share/mise/shims:$PATH"
+fi

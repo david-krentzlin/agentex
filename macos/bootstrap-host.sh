@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# One-time host bootstrap for convenient Lima aliases and optional shared mounts.
-# Run on macOS host (not inside the VM).
+# Legacy macOS host bootstrap.
+#
+# Preferred flow:
+#   ../bootstrap/host/macos.sh
+#   ../bootstrap/vm/macos-create-fedora.sh
+#
+# This wrapper delegates to the new host bootstrap when no shared workspace
+# mount is requested. The legacy --shared-dir mode is preserved for explicit
+# broad host<->guest workspace sharing.
 
 INSTANCE_NAME="dev"
 SHARED_GUEST_DIR="/home/lima.guest/Code"
@@ -10,18 +17,19 @@ SHARED_HOST_DIR=""
 ZSHRC="$HOME/.zshrc"
 BLOCK_START="# >>> agentex aliases >>>"
 BLOCK_END="# <<< agentex aliases <<<"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+NEW_HOST_BOOTSTRAP="$REPO_ROOT/bootstrap/host/macos.sh"
 
 usage() {
 	cat <<EOF
 Usage: ./bootstrap-host.sh [--shared-dir /absolute/host/path]
 
-Updates host aliases for the agent VM.
+Without --shared-dir, this delegates to the new host bootstrap at:
+  $NEW_HOST_BOOTSTRAP
 
-By default, no host directory is shared with the VM.
-When --shared-dir is set, the directory is mounted inside the guest at
-$SHARED_GUEST_DIR. If the "$INSTANCE_NAME" instance does not exist yet,
-the script creates it with that mount. If it already exists, the script
-updates the instance config and restarts it.
+When --shared-dir is set, this preserves the legacy behavior and mounts the
+directory inside the guest at $SHARED_GUEST_DIR.
 EOF
 }
 
@@ -140,19 +148,26 @@ create_shared_instance() {
 parse_args "$@"
 validate_shared_dir
 
+if [[ -z "$SHARED_HOST_DIR" ]]; then
+	if [[ ! -x "$NEW_HOST_BOOTSTRAP" ]]; then
+		echo "Error: new host bootstrap not found or not executable: $NEW_HOST_BOOTSTRAP" >&2
+		exit 1
+	fi
+
+	echo "Delegating to new host bootstrap: $NEW_HOST_BOOTSTRAP"
+	exec "$NEW_HOST_BOOTSTRAP"
+fi
+
 update_aliases
 
 echo "Updated agentex aliases in $ZSHRC"
-if [[ -n "$SHARED_HOST_DIR" ]]; then
-	if [[ -f "$HOME/.lima/${INSTANCE_NAME}/lima.yaml" ]]; then
-		configure_existing_instance
-		echo "Updated Lima shared mount: $SHARED_HOST_DIR -> $SHARED_GUEST_DIR"
-	else
-		create_shared_instance
-		echo "Created Lima instance '$INSTANCE_NAME' with shared mount: $SHARED_HOST_DIR -> $SHARED_GUEST_DIR"
-	fi
+
+if [[ -f "$HOME/.lima/${INSTANCE_NAME}/lima.yaml" ]]; then
+	configure_existing_instance
+	echo "Updated legacy Lima shared mount: $SHARED_HOST_DIR -> $SHARED_GUEST_DIR"
 else
-	echo "Shared host directory support remains off by default."
+	create_shared_instance
+	echo "Created legacy Lima instance '$INSTANCE_NAME' with shared mount: $SHARED_HOST_DIR -> $SHARED_GUEST_DIR"
 fi
 
 echo "Open a new terminal or run: source $ZSHRC"
