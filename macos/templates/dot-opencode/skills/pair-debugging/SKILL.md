@@ -14,8 +14,9 @@ description: Hypothesis-driven debugging — reproduce, hypothesize, narrow, fix
 
 ## Rules
 
+* Never speculate about a bug without reading the relevant code first.
 - No shotgun debugging. No changing things to see what happens.
 - No symptom fixes without understanding the cause.
 - Stuck after 3 hypotheses → stop, ask the human for more context.
 - Use `git log`, targeted reads, and bisection. Not guessing.
-- Say "I don't know" when that's true.
+- Say "I don't know" when that's true. Do not guess
