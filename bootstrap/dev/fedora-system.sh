@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 DEV_GROUP="devvm"
+DEV_USER="${SUDO_USER:-$USER}"
 
 # shellcheck source=lib/fedora.sh
 source "$REPO_ROOT/lib/fedora.sh"
@@ -47,7 +48,7 @@ install_optional_dnf_packages \
 	helm
 
 ensure_group "$DEV_GROUP"
-ensure_user_in_group "$USER" "$DEV_GROUP"
+ensure_user_in_group "$DEV_USER" "$DEV_GROUP"
 ensure_directory /workspaces root "$DEV_GROUP" 2775
 
 install_system_mise
@@ -60,5 +61,6 @@ install_system_coursier_apps "$COURSIER_APPS_FILE"
 echo "Fedora system bootstrap complete."
 echo "Shared workspace root: /workspaces"
 echo "Shared group: $DEV_GROUP"
+echo "Dev user in shared group: $DEV_USER"
 echo "System mise data dir: $MISE_SYSTEM_DATA_DIR_DEFAULT"
 echo "Next: run bootstrap/dev/fedora-user.sh as the dev user"
