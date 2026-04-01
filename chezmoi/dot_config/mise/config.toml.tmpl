@@ -1,0 +1,33 @@
+[settings]
+experimental = true
+install_before = "7d"
+ruby.compile = false
+
+[tools]
+opencode = "latest"
+starship = "latest"
+{{- if ne .target "host" }}
+"github:max-sixty/worktrunk" = { version = "latest", bin = "wt" }
+{{- end }}
+{{- if eq .target "dev" }}
+bun = "latest"
+go = "latest"
+node = "lts"
+shfmt = "latest"
+yq = "latest"
+"go:golang.org/x/tools/gopls" = "latest"
+"npm:yaml-language-server" = "latest"
+"npm:bash-language-server" = "latest"
+"npm:vscode-langservers-extracted" = "latest"
+"npm:dockerfile-language-server-nodejs" = "latest"
+"npm:@microsoft/compose-language-service" = "latest"
+{{- end }}
+{{- if and (eq .target "dev") (eq .context "work") }}
+java = "temurin-21"
+helm-ls = "latest"
+"github:scalameta/scalafmt" = "latest"
+[tools."github:coursier/coursier"]
+version = "latest"
+asset_pattern = "coursier"
+bin = "cs"
+{{- end }}

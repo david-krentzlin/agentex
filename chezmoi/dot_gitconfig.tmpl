@@ -1,0 +1,56 @@
+[user]
+	name = {{ .name | quote }}
+	email = {{ .email | quote }}
+{{- if and (eq .target "host") (eq .context "work") }}
+	signingkey = ~/.ssh/id_rsa.pub
+{{- end }}
+
+[alias]
+	ci = commit
+	st = status
+	co = checkout
+	br = branch
+
+[push]
+	default = current
+	autoSetupRemote = true
+
+[core]
+	excludesfile = ~/.gitignore
+
+{{- if and (eq .target "host") (eq .context "work") }}
+[commit]
+	gpgsign = true
+
+[gpg]
+	format = ssh
+
+[gpg "ssh"]
+	allowedSignersFile = ~/.ssh/allowed_signers
+
+[credential]
+	helper = osxkeychain
+
+{{- end }}
+
+{{- if and (eq .context "work") (ne .work_username "") }}
+[credential "https://source.xing.com"]
+	username = {{ .work_username | quote }}
+{{- end }}
+
+{{- if ne .github_username "" }}
+[github "source.xing.com"]
+	user = {{ .github_username | quote }}
+
+[github "api.source.xing.com"]
+	user = {{ .github_username | quote }}
+
+[github]
+	user = {{ .github_username | quote }}
+{{- end }}
+
+[init]
+	defaultBranch = main
+
+[pull]
+	rebase = false

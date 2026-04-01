@@ -1,0 +1,2 @@
+# Ensure OpenCode always runs with hardened mode unless explicitly overridden.
+export OPENCODE_HARDENED_MODE="${OPENCODE_HARDENED_MODE:-true}"

@@ -1,0 +1,45 @@
+if command -v rg >/dev/null 2>&1; then
+	alias f=rg
+fi
+
+if command -v fd >/dev/null 2>&1; then
+	alias ff='fd --glob'
+fi
+
+if command -v bat >/dev/null 2>&1; then
+	alias cat=bat
+	alias less=bat
+fi
+
+dir_colors_file="${XDG_CONFIG_HOME:-$HOME/.config}/dir_colors"
+if [[ -f "$dir_colors_file" ]]; then
+	if command -v dircolors >/dev/null 2>&1; then
+		eval "$(dircolors -b "$dir_colors_file")"
+	elif command -v gdircolors >/dev/null 2>&1; then
+		eval "$(gdircolors -b "$dir_colors_file")"
+	fi
+fi
+
+if command -v eza >/dev/null 2>&1; then
+	alias l='eza --all --long'
+	alias ll='eza'
+	alias lr='eza --long --reverse --sort modified'
+	alias lt='eza --long --tree --level=3'
+fi
+
+if command -v starship >/dev/null 2>&1; then
+	eval "$(starship init zsh)"
+fi
+
+if command -v zoxide >/dev/null 2>&1; then
+	eval "$(zoxide init zsh)"
+	alias zl='z $(zoxide query -i)'
+fi
+
+if command -v fzf >/dev/null 2>&1 && [[ -t 0 && -t 1 ]]; then
+	source <(fzf --zsh)
+fi
+
+if command -v mise >/dev/null 2>&1; then
+	eval "$(mise activate zsh)"
+fi

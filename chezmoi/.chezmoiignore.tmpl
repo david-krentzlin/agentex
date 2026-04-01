@@ -1,0 +1,23 @@
+{{- if ne .target "host" }}
+.local/bin/,dev
+.local/bin/,agent
+.config/ghostty
+.config/ghostty/**
+.config/wezterm
+.config/wezterm/**
+.config/zsh/rc.d/05_homebrew
+.config/zsh/rc.d/10_java
+.config/zsh/rc.d/20_jfrog
+{{- end }}
+{{- if eq .context "private" }}
+.config/zsh/rc.d/05_homebrew
+.config/zsh/rc.d/10_java
+.config/zsh/rc.d/20_jfrog
+{{- end }}
+{{- if ne .target "agent" }}
+.config/opencode
+.config/opencode/**
+{{- end }}
+{{- if eq .target "agent" }}
+.config/zsh/rc.d/30_nvim
+{{- end }}

@@ -1,0 +1,43 @@
+minimumLimaVersion: 2.0.0
+
+base:
+  - template:fedora
+
+vmType: vz
+cpus: 4
+memory: 4GiB
+disk: 100GiB
+plain: true
+
+user:
+  name: dev
+  comment: Development User
+  home: /home/dev
+  shell: /bin/bash
+
+mounts: []
+
+containerd:
+  system: false
+  user: false
+
+provision:
+  - mode: system
+    file: dev-fedora-system.sh
+
+probes:
+  - mode: readiness
+    description: VM users, workspace, chezmoi, and mise exist
+    script: |
+      #!/bin/bash
+      set -eux -o pipefail
+      id agent
+      getent group devvm
+      test -d /workspaces
+      command -v chezmoi
+      command -v mise
+
+message: |
+  Fedora work VM ready.
+  Dev shell:   limactl shell --workdir /home/dev {{.Name}} sudo -iu dev
+  Agent shell: limactl shell --workdir /home/dev {{.Name}} sudo -iu agent
