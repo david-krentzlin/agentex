@@ -63,6 +63,7 @@ Derived meaning:
 - Prompt for private identity data like name and email instead of committing it.
 - Start minimal and add configuration packages one by one.
 - Keep `mynvim` external. This repo only owns the bridge around it.
+- Template `opencode.json` later so default models can differ by `context`.
 
 ## Tool Responsibilities
 

@@ -59,6 +59,7 @@ Included now:
   - minimal `zsh` config via `chezmoi`
   - minimal `starship` prompt config via `chezmoi`, installed through `mise`
   - minimal `tmux` config via `chezmoi`, installed via the host and Fedora package managers
+  - core shell helper tools for `z`, `zl`, file search, and listing aliases
 
 Note: the host `,dev` entry uses `sudo -iu dev` inside the VM so the `dev` login sees the shared `devvm` group membership established during first boot.
 

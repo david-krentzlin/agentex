@@ -54,6 +54,14 @@ if ! command -v tmux >/dev/null 2>&1; then
 	brew install tmux
 fi
 
+if ! brew list --formula openjdk@21 >/dev/null 2>&1; then
+	brew install openjdk@21
+fi
+
+if ! command -v bat >/dev/null 2>&1 || ! command -v eza >/dev/null 2>&1 || ! command -v fd >/dev/null 2>&1 || ! command -v rg >/dev/null 2>&1 || ! command -v zoxide >/dev/null 2>&1 || ! command -v fzf >/dev/null 2>&1; then
+	brew install bat eza fd ripgrep zoxide fzf
+fi
+
 if [[ "$SKIP_APPLY" -eq 0 ]]; then
 	"$REPO_ROOT/bootstrap/apply-chezmoi.sh" --target host --context "$CONTEXT"
 fi
