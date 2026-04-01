@@ -126,6 +126,7 @@ printf -v REPO_PATH_Q '%q' "$REPO_PATH"
 printf -v REPO_PARENT_Q '%q' "$(dirname "$REPO_PATH")"
 printf -v REPO_URL_Q '%q' "$REPO_URL"
 printf -v APPLY_CMD '%q ' "${APPLY_ARGS[@]}"
+REPO_ORIGIN_SSH_UPDATE_CMD="origin_url=\$(git -C $REPO_PATH_Q remote get-url origin 2>/dev/null || true); case \"\$origin_url\" in https://github.com/*) git -C $REPO_PATH_Q remote set-url origin \"git@github.com:\${origin_url#https://github.com/}\" ;; https://source.xing.com/*) git -C $REPO_PATH_Q remote set-url origin \"git@source.xing.com:\${origin_url#https://source.xing.com/}\" ;; esac"
 
 repo_status=0
 limactl shell --workdir /home/dev "$INSTANCE_NAME" sudo -iu dev bash -lc "if [[ -d $REPO_PATH_Q/.git && -f $REPO_PATH_Q/bootstrap/apply-chezmoi.sh ]]; then exit 0; fi; if [[ -e $REPO_PATH_Q ]]; then echo 'Error: repo path exists in VM but does not look like a home-sweet-home git checkout: $REPO_PATH' >&2; exit 1; fi; exit 2" || repo_status=$?
@@ -138,6 +139,6 @@ elif [[ $repo_status -ne 0 ]]; then
 	exit "$repo_status"
 fi
 
-limactl shell --workdir /home/dev "$INSTANCE_NAME" sudo -iu dev bash -lc 'origin_url="$(git -C '"$REPO_PATH_Q"' remote get-url origin 2>/dev/null || true)"; case "$origin_url" in https://github.com/*) git -C '"$REPO_PATH_Q"' remote set-url origin "git@github.com:${origin_url#https://github.com/}" ;; https://source.xing.com/*) git -C '"$REPO_PATH_Q"' remote set-url origin "git@source.xing.com:${origin_url#https://source.xing.com/}" ;; esac'
+limactl shell --workdir /home/dev "$INSTANCE_NAME" sudo -iu dev bash -lc "$REPO_ORIGIN_SSH_UPDATE_CMD"
 
 exec limactl shell --workdir /home/dev "$INSTANCE_NAME" sudo -iu "$TARGET" bash -lc "cd $REPO_PATH_Q; $APPLY_CMD"
