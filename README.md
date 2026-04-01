@@ -6,20 +6,9 @@ Private bootstrap repo for your macOS host and your Fedora Lima dev VM.
 
 Use these scripts only:
 
-- `bootstrap/host/macos.sh`
-- `bootstrap/vm/macos-create-fedora.sh`
-- `bootstrap/apply-chezmoi.sh`
-
-Do not use the older `bootstrap/dev/*` or `bootstrap/agent/*` scripts. They are legacy and are not the current path.
-
-## Requirements
-
-- macOS
-- Homebrew already installed
-- Git
-- Your git identity details
-- Your GitHub username
-- Your work username for `--context work`
+- `bootstrap/host/macos.sh` to setup the host box
+- `bootstrap/vm/macos-create-fedora.sh` to create a fedora dev vm 
+- `bootstrap/apply-chezmoi.sh` to update/add configuration both in the vm and on the host.
 
 ## First-Time Setup
 
