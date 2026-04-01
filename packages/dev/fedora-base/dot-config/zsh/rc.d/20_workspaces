@@ -1,2 +1,0 @@
-export DK_WORKSPACES_PATH="/workspaces"
-umask 0002

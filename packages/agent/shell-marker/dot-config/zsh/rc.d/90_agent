@@ -1,2 +1,0 @@
-export AGENT_SHELL=1
-export STARSHIP_CONFIG="$HOME/.config/starship-agent.toml"

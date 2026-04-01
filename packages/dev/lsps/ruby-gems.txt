@@ -1,3 +1,0 @@
-# Ruby tooling
-ruby-lsp
-rufo

@@ -1,8 +1,0 @@
-format = "$custom$directory$git_branch$git_status$line_break$character"
-
-[custom.agent]
-command = "echo AGENT-SHELL"
-when = "test \"$AGENT_SHELL\" = \"1\""
-shell = ["bash", "--noprofile", "--norc"]
-style = "bold black bg:green"
-format = "[$output]($style) "

@@ -1,4 +1,0 @@
-# Node-based language servers
-yaml-language-server
-bash-language-server
-vscode-langservers-extracted

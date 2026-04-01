@@ -1,1 +1,0 @@
-export MYNVIM_ENV="${MYNVIM_ENV:-work}"
