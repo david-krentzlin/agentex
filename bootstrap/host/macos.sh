@@ -50,6 +50,10 @@ if ! command -v limactl >/dev/null 2>&1; then
 	brew install lima
 fi
 
+if ! command -v tmux >/dev/null 2>&1; then
+	brew install tmux
+fi
+
 if [[ "$SKIP_APPLY" -eq 0 ]]; then
 	"$REPO_ROOT/bootstrap/apply-chezmoi.sh" --target host --context "$CONTEXT"
 fi

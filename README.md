@@ -57,6 +57,8 @@ Included now:
 - first fundamental packages:
   - `mise` config, trusted and installed during `chezmoi` apply when `mise` is present
   - minimal `zsh` config via `chezmoi`
+  - minimal `starship` prompt config via `chezmoi`, installed through `mise`
+  - minimal `tmux` config via `chezmoi`, installed via the host and Fedora package managers
 
 Note: the host `,dev` entry uses `sudo -iu dev` inside the VM so the `dev` login sees the shared `devvm` group membership established during first boot.
 

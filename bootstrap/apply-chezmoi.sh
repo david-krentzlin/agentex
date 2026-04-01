@@ -10,6 +10,8 @@ CONTEXT=""
 DEST_DIR="$HOME"
 NAME=""
 EMAIL=""
+GITHUB_USERNAME=""
+WORK_USERNAME=""
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/chezmoi"
 STATE_FILE=""
 
@@ -35,12 +37,20 @@ while [[ $# -gt 0 ]]; do
 		EMAIL="$2"
 		shift 2
 		;;
+	--github-username)
+		GITHUB_USERNAME="$2"
+		shift 2
+		;;
+	--work-username)
+		WORK_USERNAME="$2"
+		shift 2
+		;;
 	--state-file)
 		STATE_FILE="$2"
 		shift 2
 		;;
 	-h | --help)
-		echo "Usage: bootstrap/apply-chezmoi.sh --target {host|dev|agent} --context {work|private} [--destination DIR] [--name NAME] [--email EMAIL] [--state-file FILE]"
+		echo "Usage: bootstrap/apply-chezmoi.sh --target {host|dev|agent} --context {work|private} [--destination DIR] [--name NAME] [--email EMAIL] [--github-username USERNAME] [--work-username USERNAME] [--state-file FILE]"
 		exit 0
 		;;
 	*)
@@ -80,7 +90,7 @@ trap cleanup EXIT
 chezmoi execute-template \
 	--init \
 	--file \
-	--promptString "Target=$TARGET,Context=$CONTEXT,Git author name=$NAME,Git author email=$EMAIL" \
+	--promptString "Target=$TARGET,Context=$CONTEXT,Git author name=$NAME,Git author email=$EMAIL,GitHub username=$GITHUB_USERNAME,Work username=$WORK_USERNAME" \
 	"$CONFIG_TEMPLATE" >"$TMP_CONFIG"
 
 printf '\n[warnings]\nconfigFileTemplateHasChanged = false\n' >>"$TMP_CONFIG"

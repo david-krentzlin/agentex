@@ -1,5 +1,13 @@
+{{- $target := promptStringOnce . "target" "Target" -}}
+{{- $context := promptStringOnce . "context" "Context" -}}
 [data]
-target = {{ promptStringOnce . "target" "Target" | quote }}
-context = {{ promptStringOnce . "context" "Context" | quote }}
+target = {{ $target | quote }}
+context = {{ $context | quote }}
 name = {{ promptStringOnce . "name" "Git author name" | quote }}
 email = {{ promptStringOnce . "email" "Git author email" | quote }}
+github_username = {{ promptStringOnce . "github_username" "GitHub username" | quote }}
+{{- if eq $context "work" }}
+work_username = {{ promptStringOnce . "work_username" "Work username" | quote }}
+{{- else }}
+work_username = ""
+{{- end }}
