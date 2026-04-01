@@ -1,0 +1,5 @@
+typeset -U path PATH
+
+if [[ -d /opt/homebrew/bin ]]; then
+	path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
+fi

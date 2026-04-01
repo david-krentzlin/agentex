@@ -1,105 +1,118 @@
-# agentex
+# home-sweet-home
 
-`agentex` bootstraps a repeatable development environment around a small set of standard tools:
+Private bootstrap repo for your macOS host and your Fedora Lima dev VM.
 
-- Lima for the Fedora VM on macOS
-- `cloud-init` for first-boot VM provisioning
-- `chezmoi` for user configuration
-- `mise` for runtimes and developer tools
+## What To Use
 
-The architecture is defined in `DEV_ENV_PLAN.md`.
+Use these scripts only:
 
-## Configuration Model
+- `bootstrap/host/macos.sh`
+- `bootstrap/vm/macos-create-fedora.sh`
+- `bootstrap/apply-chezmoi.sh`
 
-This repository is moving to two explicit selectors:
+Do not use the older `bootstrap/dev/*` or `bootstrap/agent/*` scripts. They are legacy and are not the current path.
 
-- `target`: `host`, `dev`, `agent`
-- `context`: `work`, `private`
+## Requirements
 
-Current implementation scope is `context=work` only.
+- macOS
+- Homebrew already installed
+- Git
+- Your git identity details
+- Your GitHub username
+- Your work username for `--context work`
 
-Meaning:
+## First-Time Setup
 
-- `host` is the host machine
-- `dev` is the Fedora VM development user
-- `agent` is the Fedora VM agent user
+1. Clone this repo on your Mac.
+2. Run the host bootstrap.
 
-## Current Direction
-
-The old custom `stow` and split bootstrap flow is now legacy reference material.
-
-The preferred direction is:
-
-1. run `bootstrap/host/macos.sh`
-2. create the Fedora VM with `bootstrap/vm/macos-create-fedora.sh`
-3. apply config with `bootstrap/apply-chezmoi.sh`
-4. add config and tooling incrementally
-
-Current context support:
-
-- host bootstrap supports `work` and `private`
-- VM creation remains `context=work` only for now
-
-## Minimal First Slice
-
-The first slice aims to prove the architecture, not full parity.
-
-Included now:
-
-- minimal macOS host bootstrap for `chezmoi` and Lima
-- minimal Lima template for a Fedora work VM
-- cloud-init-backed VM provisioning for:
-  - `dev`
-  - `agent`
-  - shared `/workspaces`
-  - minimal base packages
-  - `chezmoi`
-  - `mise`
-- minimal `chezmoi` source state for:
-  - git identity
-  - host `,dev` and `,agent` entry commands
-  - target/context marker config
-  - scoped OpenCode config for `agent`
-- first fundamental packages:
-  - `mise` config, trusted and installed during `chezmoi` apply when `mise` is present
-  - minimal `zsh` config via `chezmoi`
-  - minimal `starship` prompt config via `chezmoi`, installed through `mise`
-  - minimal `tmux` config via `chezmoi`, installed via the host and Fedora package managers
-  - core shell helper tools for `z`, `zl`, file search, and listing aliases
-  - dev runtime and LSP install path via context-aware `mise` config, with `metals` installed through `coursier` as the one architecture-specific exception
-
-Note: the host `,dev` entry uses `sudo -iu dev` inside the VM so the `dev` login sees the shared `devvm` group membership established during first boot.
-
-Deferred until later:
-
-- Neovim integration
-- extra CLI tools
-- LSP stacks
-- full private context support
-- `opencode.json` model templating by `context`
-
-## Repository Layout
-
-The key directories for the new path are:
-
-```text
-.
-├── bootstrap/
-│   ├── apply-chezmoi.sh
-│   ├── host/
-│   │   └── macos.sh
-│   └── vm/
-│       └── macos-create-fedora.sh
-├── chezmoi/
-├── cloud-init/
-├── lima/
-└── mise/
+```bash
+./bootstrap/host/macos.sh --context work
 ```
 
-The older `packages/`, `profiles/`, and related helpers remain in the tree as migration reference and should not be expanded further.
+3. Create the Fedora VM.
 
-## Next Steps
+```bash
+./bootstrap/vm/macos-create-fedora.sh --context work
+```
 
-1. Prove `target=host`, `target=dev`, and `target=agent` for `context=work`
-2. Port only one config package at a time
-3. Add `context=private` after the work setup is stable
+4. Open the VM as the `dev` user.
+
+```bash
+,dev
+```
+
+5. Inside the VM, clone this repo into `/workspaces`.
+
+```bash
+git clone <private-repo-url> /workspaces/home-sweet-home
+cd /workspaces/home-sweet-home
+```
+
+6. Apply the `dev` user config inside the VM.
+
+```bash
+./bootstrap/apply-chezmoi.sh --target dev --context work
+```
+
+7. Open the VM as the `agent` user.
+
+```bash
+,agent
+```
+
+8. Apply the `agent` user config from the same repo checkout.
+
+```bash
+cd /workspaces/home-sweet-home
+./bootstrap/apply-chezmoi.sh --target agent --context work
+```
+
+## What You Get
+
+- macOS host tools installed with Homebrew
+- a Fedora Lima VM named `dev`
+- host entry commands: `,dev` and `,agent`
+- `chezmoi`-managed config for `host`, `dev`, and `agent`
+- `mise` config applied when available
+
+## Daily Use
+
+- Open the dev shell with `,dev`
+- Open the agent shell with `,agent`
+- Pull repo changes and re-run `bootstrap/apply-chezmoi.sh` for the target you changed
+
+## Re-Apply Config
+
+On macOS host:
+
+```bash
+./bootstrap/apply-chezmoi.sh --target host --context work
+```
+
+Inside the VM as `dev`:
+
+```bash
+./bootstrap/apply-chezmoi.sh --target dev --context work
+```
+
+Inside the VM as `agent`:
+
+```bash
+./bootstrap/apply-chezmoi.sh --target agent --context work
+```
+
+## Prompted Values
+
+The `chezmoi` apply script will prompt for:
+
+- git author name
+- git author email
+- GitHub username
+- work username when `--context work` is used
+
+## Current Limits
+
+- VM setup currently supports only `--context work`
+- `--context private` is only for the macOS host flow right now
+- The repo is not mounted automatically into the VM, so keep a clone in `/workspaces/home-sweet-home`
