@@ -63,3 +63,33 @@ Repos under `/workspaces` are intended to be shared between `dev` and `agent`.
 - Pull repo changes in the VM repo checkout under `/workspaces/home-sweet-home`
 - Re-run `bootstrap/vm/apply-user.sh` for `dev` or `agent`
 - Apply `dev` first, then `agent`, if you are updating both
+
+## Access VM Servers From The Host
+
+Lima forwards guest localhost ports to host localhost, so you can run an app server in the VM and open it in a browser on the host.
+
+Run the server inside the VM and bind it to `127.0.0.1` or `localhost`.
+
+Examples:
+
+```bash
+# Rails inside the VM
+bin/rails server -b 127.0.0.1 -p 3000
+
+# Open on the host
+http://localhost:3000
+```
+
+```bash
+# Another app inside the VM
+./server --host 127.0.0.1 --port 8080
+
+# Open on the host
+http://localhost:8080
+```
+
+Notes:
+
+- Prefer binding app servers to `127.0.0.1` in the VM
+- Use the same port number on the host
+- The VM guest IP is not directly reachable from the host with the current Lima network mode
