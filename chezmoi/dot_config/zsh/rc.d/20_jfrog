@@ -1,7 +1,0 @@
-,jfrog_oidc_env() {
-	echo "Exporting jfrog credentials from 1Password"
-	export JFROG_OIDC_USER="$(op read "op://Private/JFROG_OIDC/username")"
-	export JFROG_OIDC_TOKEN="$(op read "op://Private/JFROG_OIDC/password")"
-
-	echo "Set JFROG_OIDC_USER and JFROG_OIDC_TOKEN"
-}

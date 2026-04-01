@@ -93,3 +93,27 @@ Notes:
 - Prefer binding app servers to `127.0.0.1` in the VM
 - Use the same port number on the host
 - The VM guest IP is not directly reachable from the host with the current Lima network mode
+
+## Sync JFrog Credentials To The VM
+
+JFrog credentials stay sourced from 1Password on the host and are copied explicitly into the VM when needed.
+
+The host shell already provides `,jfrog_oidc_env`, which exports `JFROG_OIDC_USER` and `JFROG_OIDC_TOKEN`.
+
+Sync credentials for a VM user with:
+
+```bash
+,jfrog_oidc_env
+./bootstrap/vm/sync-jfrog.sh --target dev --host your.jfrog.example.com --realm "Your JFrog Realm"
+./bootstrap/vm/sync-jfrog.sh --target agent --host your.jfrog.example.com --realm "Your JFrog Realm"
+```
+
+If Ruby gems use a different host than Scala/sbt, pass `--ruby-host` too.
+
+The sync writes VM-local files only:
+
+- `~/.config/home-sweet-home/jfrog-oidc.env`
+- `~/.ivy2/.credentials`
+- `~/.config/coursier/credentials.properties`
+
+On VM work shells, `SBT_CREDENTIALS` and `COURSIER_CREDENTIALS` are exported automatically when those files exist.
