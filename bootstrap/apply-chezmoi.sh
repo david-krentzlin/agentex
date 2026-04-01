@@ -83,9 +83,19 @@ chezmoi execute-template \
 	--promptString "Target=$TARGET,Context=$CONTEXT,Git author name=$NAME,Git author email=$EMAIL" \
 	"$CONFIG_TEMPLATE" >"$TMP_CONFIG"
 
+printf '\n[warnings]\nconfigFileTemplateHasChanged = false\n' >>"$TMP_CONFIG"
+
 chezmoi \
 	--config "$TMP_CONFIG" \
 	--destination "$DEST_DIR" \
 	--persistent-state "$STATE_FILE" \
 	--source "$SOURCE_DIR" \
 	apply
+
+if [[ "$DEST_DIR" == "$HOME" && -f "$HOME/.config/mise/config.toml" ]] && command -v mise >/dev/null 2>&1; then
+	(
+		cd "$HOME"
+		mise trust "$HOME/.config/mise/config.toml"
+		mise install
+	)
+fi

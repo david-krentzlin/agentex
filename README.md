@@ -54,6 +54,7 @@ Included now:
   - git identity
   - host `,dev` and `,agent` entry commands
   - target/context marker config
+- first fundamental package: `mise` config, trusted and installed during `chezmoi` apply when `mise` is present
 
 Note: the host `,dev` entry uses `sudo -iu dev` inside the VM so the `dev` login sees the shared `devvm` group membership established during first boot.
 
