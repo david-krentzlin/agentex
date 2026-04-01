@@ -54,6 +54,7 @@ Included now:
   - git identity
   - host `,dev` and `,agent` entry commands
   - target/context marker config
+  - scoped OpenCode config for `agent`
 - first fundamental packages:
   - `mise` config, trusted and installed during `chezmoi` apply when `mise` is present
   - minimal `zsh` config via `chezmoi`
@@ -65,14 +66,11 @@ Note: the host `,dev` entry uses `sudo -iu dev` inside the VM so the `dev` login
 
 Deferred until later:
 
-- `zsh`
-- `starship`
-- `tmux`
 - Neovim integration
 - extra CLI tools
 - LSP stacks
 - full private context support
-- full OpenCode config migration into `chezmoi`
+- `opencode.json` model templating by `context`
 
 ## Repository Layout
 

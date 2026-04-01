@@ -74,18 +74,15 @@ Included:
 - host bootstrap for Lima and `chezmoi`
 - Fedora VM creation from a repo-managed Lima template
 - cloud-init-backed provisioning for `dev`, `agent`, and `/workspaces`
-- minimal `chezmoi` config for git identity, host entry commands, and target/context markers
-- minimal `mise` manifest scaffold
+- scoped `chezmoi` config for git, shell setup, OpenCode, and target/context markers
+- managed `mise`, `zsh`, `starship`, `tmux`, and shell helper baseline
 
 Deferred:
 
-- `zsh`
-- `starship`
-- `tmux`
 - Neovim integration
 - LSP bundles
 - private-context setup
-- full OpenCode config migration into `chezmoi`
+- `opencode.json` model templating by `context`
 
 ## Legacy Note
 
