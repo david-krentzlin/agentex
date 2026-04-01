@@ -52,6 +52,7 @@ ensure_user_in_group "$DEV_USER" "$DEV_GROUP"
 ensure_directory /workspaces root "$DEV_GROUP" 2775
 
 install_system_mise
+trust_system_mise_configs "$REPO_ROOT"
 install_system_mise_tools "$REPO_ROOT"
 install_system_node_packages "$REPO_ROOT" "$NODE_PACKAGES_FILE"
 install_system_ruby_gems "$REPO_ROOT" "$RUBY_GEMS_FILE"

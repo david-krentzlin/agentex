@@ -2,367 +2,285 @@
 
 ## Goal
 
-Converge this repository into the single source of truth for three setup scopes:
+Make this repository the single source of truth for a development environment with two explicit selectors:
 
-- `host` for the bare macOS host setup
-- `dev` for the Fedora development VM user
-- `agent` for the Fedora agent user
+- `target`: `host`, `dev`, `agent`
+- `context`: `work`, `private`
 
-`system-config-work` becomes a migration source and is retired once parity is reached.
+Where:
+
+- `host` means the macOS host machine
+- `dev` means the Fedora VM development user
+- `agent` means the Fedora VM agent user
+
+Initial scope is `context=work`. `context=private` is designed in from the start but not implemented yet.
+
+## Architecture
+
+The environment will be built from proven tools with clear responsibilities:
+
+- Lima manages the Fedora VM lifecycle on macOS.
+- `cloud-init` provisions the VM on first boot.
+- `chezmoi` manages target-aware and context-aware configuration.
+- `mise` manages runtimes and developer tools.
+
+The existing custom `stow` and bootstrap flow is no longer the target architecture. It remains reference material until the new path is proven.
+
+## Selectors
+
+The configuration model is intentionally simple.
+
+### `target`
+
+- `host`
+- `dev`
+- `agent`
+
+Derived meaning:
+
+- `host` implies macOS if context == work and fedora if context == private
+- `dev` and `agent` imply Fedora inside the Lima VM
+- `dev` and `agent` are separate Linux users
+
+### `context`
+
+- `work`
+- `private`
+
+Derived meaning:
+
+- `work` may include work-only configuration and tooling
+- `private` will later include private-machine-specific configuration
 
 ## Principles
 
-- The host is treated differently from the VM.
-- The Fedora VM setup should be the same on the macOS work machine and the private machine once the VM exists.
-- `dev` and `agent` are separate Linux users.
-- `/workspaces` is the canonical shared workspace root inside the VM.
-- A narrow writable host mount is used for easy transfer between host and VM.
-- `mynvim` stays separate. This repository only owns the bridge/config glue around it.
-- Prefer a system-wide `mise` install for shared toolchains. Fall back to per-user only if system-wide proves too awkward.
-- `stow` manages files. Bootstrap scripts manage package installation and machine setup.
+- Prefer standard tools over custom orchestration.
+- Keep the host separate from the VM.
+- Keep `dev` and `agent` as separate Linux users inside the VM.
+- Use `/workspaces` as the canonical shared workspace root inside the VM.
+- Use `chezmoi` for config convergence, not ad hoc symlink logic.
+- Use `mise` for runtimes and developer tools as much as possible.
+- Prompt for private identity data like name and email instead of committing it.
+- Start minimal and add configuration packages one by one.
+- Keep `mynvim` external. This repo only owns the bridge around it.
 
-## Target Repository Layout
+## Tool Responsibilities
+
+### Lima
+
+- Create and run the Fedora VM on macOS.
+- Pass first-boot configuration via `cloud-init`.
+- Remain the only host-side VM management layer.
+
+### cloud-init
+
+- Perform first-boot VM provisioning.
+- Create the `dev` and `agent` users.
+- Create the shared group and `/workspaces`.
+- Install the minimum packages needed to make the VM usable.
+- Install or enable `chezmoi` and `mise` if needed.
+
+`cloud-init` should stay focused on first-boot system concerns. It should not become the long-term home for user configuration logic.
+
+### chezmoi
+
+- Manage user-facing configuration for all targets.
+- Apply target-aware and context-aware config.
+- Prompt for user-specific data like git name and email.
+- Use `.chezmoiignore.tmpl` to ignore whole config areas that do not apply.
+- Manage host aliases such as `,dev` and `,agent`.
+- Manage agent-only OpenCode configuration.
+
+### mise
+
+- Manage shared or target-specific runtimes.
+- Manage developer tools and language servers where feasible.
+- Keep manifests in the repo.
+
+Current preference is to keep `mise` shared/system-wide inside the VM unless that proves too fragile.
+
+## Repository Shape
+
+The exact file layout can evolve, but the intended structure is:
 
 ```text
 .
 ├── bootstrap/
 │   ├── host/
 │   │   └── macos.sh
-│   ├── vm/
-│   │   └── macos-create-fedora.sh
-│   ├── dev/
-│   │   ├── fedora-system.sh
-│   │   └── fedora-user.sh
-│   └── agent/
-│       ├── create-user.sh
-│       └── fedora-user.sh
-├── profiles/
-│   ├── host-macos
-│   ├── dev-fedora
-│   └── agent-fedora
-├── packages/
+│   └── vm/
+│       └── macos-create-fedora.sh
+├── lima/
+│   └── dev-fedora.yaml.tmpl
+├── cloud-init/
+│   └── dev-fedora-user-data.yaml.tmpl
+├── chezmoi/
+│   ├── .chezmoiignore.tmpl
 │   ├── common/
-│   │   ├── git/
-│   │   ├── zsh/
-│   │   ├── starship/
-│   │   └── mynvim-bridge/
 │   ├── host/
-│   │   ├── macos-tools/
-│   │   ├── lima/
-│   │   └── zsh-macos/
+│   ├── vm/
 │   ├── dev/
-│   │   ├── fedora-base/
-│   │   ├── fedora-cli/
-│   │   ├── mise/
-│   │   ├── runtimes/
-│   │   ├── lsps/
-│   │   ├── tmux/
-│   │   └── zsh-fedora/
-│   └── agent/
-│       ├── opencode/
-│       ├── shell-marker/
-│       └── agent-git/
-└── lib/
-    ├── fedora.sh
-    ├── profile.sh
-    └── stow.sh
+│   ├── agent/
+│   ├── work/
+│   └── private/
+└── mise/
+    ├── config.toml
+    └── manifests/
 ```
 
-## Package Model
+Notes:
 
-### Common
+- `chezmoi/` is the source state owned by this repo.
+- The directories under `chezmoi/` are organizational. `chezmoi` templates and ignore rules decide what applies for a given `target` and `context`.
+- The current custom `packages/`, `profiles/`, and `lib/stow.sh` direction is legacy and should not be expanded further.
 
-- `packages/common/git`
-  - Shared git config and ignores
-- `packages/common/zsh`
-  - Shared shell behavior used by host, dev, and agent
-- `packages/common/starship`
-  - Shared prompt config
-- `packages/common/mynvim-bridge`
-  - Environment and helper glue expected by `mynvim`
-  - No actual Neovim config lives here
+## Minimal First Slice
 
-### Host
+The first milestone should prove the architecture, not full parity.
 
-- `packages/host/macos-tools`
-  - Minimal host-only tools
-- `packages/host/lima`
-  - VM lifecycle aliases and helper commands
-- `packages/host/zsh-macos`
-  - Homebrew and macOS-specific shell init
+### Host work target
 
-### Dev
+- Ensure the macOS host can install or verify the minimum dependencies.
+- Apply `chezmoi` for `target=host` and `context=work`.
+- Install host aliases:
+  - `,dev` to enter the VM as the dev user
+  - `,agent` to enter the VM as the agent user
 
-- `packages/dev/fedora-base`
-  - `/workspaces` setup, shared group defaults, umask glue
-- `packages/dev/fedora-cli`
-  - Fedora-side CLI tools and quality-of-life tools
-- `packages/dev/mise`
-  - Shared `mise` activation and config
-- `packages/dev/runtimes`
-  - Ruby, Go, Node, Java selection and install logic
-- `packages/dev/lsps`
-  - `ruby-lsp`, `gopls`, `metals`, `yaml-language-server`, `helm-ls`, formatters
-- `packages/dev/tmux`
-  - Tmux config for the dev VM
-- `packages/dev/zsh-fedora`
-  - Fedora-specific shell init
+### VM work targets
 
-### Agent
+- Lima creates a Fedora VM using `cloud-init`.
+- `cloud-init` creates:
+  - `dev`
+  - `agent`
+  - shared group
+  - `/workspaces`
+- `chezmoi` applies a minimal `target=dev` and `target=agent` configuration.
+- `agent` receives the OpenCode config.
+- `mise` installs only a small initial toolset.
 
-- `packages/agent/opencode`
-  - Current OpenCode config from `templates/dot-config/opencode`
-- `packages/agent/shell-marker`
-  - Agent shell marker and prompt differences
-- `packages/agent/agent-git`
-  - Agent-specific git identity/editor defaults if needed
+### Not in the first slice
 
-## Profiles
+Do not start with full parity. Add these later, one by one:
 
-### `profiles/host-macos`
-
-- `common/git`
-- `common/zsh`
-- `common/starship`
-- `common/mynvim-bridge`
-- `host/zsh-macos`
-- `host/macos-tools`
-- `host/lima`
-
-### `profiles/dev-fedora`
-
-- `common/git`
-- `common/zsh`
-- `common/starship`
-- `common/mynvim-bridge`
-- `dev/fedora-base`
-- `dev/fedora-cli`
-- `dev/mise`
-- `dev/runtimes`
-- `dev/lsps`
-- `dev/tmux`
-- `dev/zsh-fedora`
-
-### `profiles/agent-fedora`
-
-- `common/git`
-- `common/zsh`
-- `common/starship`
-- `agent/opencode`
-- `agent/shell-marker`
-- `agent/agent-git`
-
-## Bootstrap Flow
-
-### macOS Work Host
-
-1. Clone this repository on the host.
-2. Run `bootstrap/host/macos.sh`.
-3. Run `bootstrap/vm/macos-create-fedora.sh`.
-4. Enter the VM as the dev user.
-5. Clone this repository inside the VM.
-6. Run `bootstrap/dev/fedora-system.sh`.
-7. Run `bootstrap/dev/fedora-user.sh`.
-8. Run `bootstrap/agent/create-user.sh`.
-9. Switch to `agent`, clone this repository again.
-10. Run `bootstrap/agent/fedora-user.sh`.
-
-### Private Fedora VM
-
-1. Create the Fedora VM using the private-machine-specific method.
-2. Clone this repository inside the VM.
-3. Run `bootstrap/dev/fedora-system.sh`.
-4. Run `bootstrap/dev/fedora-user.sh`.
-5. Run `bootstrap/agent/create-user.sh`.
-6. Run `bootstrap/agent/fedora-user.sh`.
-
-## Script Responsibilities
-
-### `bootstrap/host/macos.sh`
-
-- Install or verify host prerequisites
-- Apply `host-macos` profile
-- Set up host shell aliases for VM lifecycle
-- Create a default transfer directory on the host, for example `~/VMTransfer`
-
-### `bootstrap/vm/macos-create-fedora.sh`
-
-- Create the Lima Fedora VM
-- Keep project work inside the VM by default
-- Mount a narrow writable transfer directory only
-- Recommended mount:
-  - Host: `~/VMTransfer`
-  - Guest: `/transfer`
-- Support broader mounts only as an explicit opt-in later
-
-### `bootstrap/dev/fedora-system.sh`
-
-- Run as root
-- Install Fedora packages with `dnf`
-- Create a shared group, for example `devvm`
-- Create `/workspaces`
-- Set group ownership and setgid on `/workspaces`
-- Install `mise` system-wide if feasible
-- Install shared runtimes and tools for both users
-- Add global shell activation if needed
-
-### `bootstrap/dev/fedora-user.sh`
-
-- Run as the dev user
-- Apply the `dev-fedora` profile via `stow`
-- Set user defaults
-- Verify `mynvim` bridge env is in place
-
-### `bootstrap/agent/create-user.sh`
-
-- Create the `agent` user
-- Add `agent` to the shared `devvm` group
-- Do not grant sudo by default
-- Set the default shell
-- Create the agent SSH directory
-
-### `bootstrap/agent/fedora-user.sh`
-
-- Run as `agent`
-- Apply the `agent-fedora` profile
-- Install OpenCode config
-- Generate an agent SSH key
-- Configure the agent-only shell marker
-
-## Workspace Model
-
-- `/workspaces` is the canonical VM workspace root
-- `dev` and `agent` are in the same Unix group
-- Both users should use `umask 0002`
-- Directories under `/workspaces` should use setgid so new files preserve group ownership
-- `/transfer` is only for easy file transfer between host and VM
-- `/transfer` is not the primary development workspace
-
-## Tooling Strategy
-
-### Fedora packages via `dnf`
-
-- `git`
-- `stow`
 - `zsh`
+- `starship`
 - `tmux`
-- `neovim`
-- `ripgrep`
-- `fd-find`
-- `jq`
-- `curl`
-- `gcc`
-- `gcc-c++`
-- `make`
-- `openssh-clients`
-- `tar`
-- `unzip`
+- `neovim` integration
+- extra CLI utilities
+- LSP stacks
+- private context support
 
-### Shared runtimes via `mise`
+## Configuration Strategy
 
-- `ruby`
-- `go`
-- `node`
-- `java`
+### chezmoi data
 
-### Editor support tools
+The `chezmoi` templates should receive explicit values for:
 
-- `ruby-lsp`
-- `gopls`
-- `metals`
-- `yaml-language-server`
-- `helm-ls`
-- `shfmt`
-- `stylua`
-- `yq`
+- `target`
+- `context`
+- `user.name`
+- `user.email`
 
-Neovim should consume tools already on `PATH`. Do not depend on Mason for baseline installation.
+Optional later data may include:
 
-## System-wide `mise` Plan
+- GitHub username
+- machine labels
+- work-specific defaults
 
-Target:
+Private identity data must never be hardcoded in the repository.
 
-- One shared `mise` installation
-- One shared runtime/tool store for both users
-- Global shell activation where appropriate
+### .chezmoiignore.tmpl
 
-Early spike:
+Use `.chezmoiignore.tmpl` to exclude whole configuration areas that do not apply to the current target and context.
 
-- Validate a system-wide `mise` binary and shared data dir
-- Verify both `dev` and `agent` can resolve the same shims and runtimes cleanly
-- Verify installs do not become permission-fragile
+Examples:
 
-Fallback:
+- ignore `host/` for VM targets
+- ignore `agent/` for `dev`
+- ignore `work/` for `private`
+- ignore `private/` for `work`
 
-- Keep the same package and profile layout
-- Switch only the `mise` install mode to per-user if system-wide proves too awkward
+This should be the primary bulk-selection mechanism rather than scattering conditionals across every file.
 
-## Migration Map
+## VM Model
 
-### From `system-config-work`
+- The Fedora VM is the main development environment.
+- `/workspaces` is the canonical shared workspace root.
+- `dev` and `agent` share access through a common Unix group.
+- `agent` should not have sudo by default.
+- The host should not become the primary development workspace.
 
-- `packages/git` -> `packages/common/git`
-- `packages/zsh` -> split into:
-  - `packages/common/zsh`
-  - `packages/host/zsh-macos`
-  - `packages/dev/zsh-fedora`
-- `packages/starship` -> `packages/common/starship`
-- `packages/tmux` -> `packages/dev/tmux`
-- `packages/tools` -> split into host and Fedora CLI packages
-- `packages/mise` -> `packages/dev/mise`
-- `packages/helix` install logic -> seed for `packages/dev/lsps`
-- `packages/opencode` env snippet -> merge into `packages/agent/opencode` or `packages/agent/shell-marker`
+## Tooling Model
 
-### From current `agentex`
+`mise` stays the main tool manager.
 
-- `macos/bootstrap-host.sh` -> split into:
-  - `bootstrap/host/macos.sh`
-  - `bootstrap/vm/macos-create-fedora.sh`
-- `macos/bootstrap-vm.sh` -> split into:
-  - `bootstrap/dev/fedora-system.sh`
-  - `bootstrap/dev/fedora-user.sh`
-  - `bootstrap/agent/create-user.sh`
-  - `bootstrap/agent/fedora-user.sh`
-- `templates/dot-config/opencode/*` -> `packages/agent/opencode/*`
+The initial manifest should be intentionally small. Expand only after the minimal flow is proven.
 
-### From `mynvim`
+Good early candidates:
 
-- Do not migrate the Neovim config into this repository
-- Add a bridge package only for env and compatibility hooks
+- `opencode`
+- one or two core runtimes if truly required
 
-## Execution Order
+Everything else should be added incrementally and validated in isolation.
 
-1. Introduce the new repository layout.
-2. Add profile files and the common profile runner.
-3. Split the current host bootstrap into host and VM-create scripts.
-4. Port OpenCode templates into `packages/agent/opencode`.
-5. Port shared git, zsh, and starship config.
-6. Split zsh into common, macOS, and Fedora overlays.
-7. Add the Fedora system bootstrap with `/workspaces` and the shared group.
-8. Run the system-wide `mise` spike.
-9. Add runtimes and LSP install scripts.
-10. Port tmux.
-11. Add agent user creation and agent profile bootstrap.
-12. Validate the full flow on a clean Lima VM.
-13. Retire `system-config-work` once parity is reached.
+## Incremental Package Rollout
+
+After the minimal architecture is proven, add configuration and tooling in small steps.
+
+Suggested order:
+
+1. git identity and shared git config
+2. minimal shell config
+3. host aliases for VM entry
+4. agent OpenCode config
+5. `zsh`
+6. `starship`
+7. `tmux`
+8. `mynvim` bridge
+9. runtimes via `mise`
+10. editor tooling and LSPs
+
+Each addition should be target-aware, context-aware, and validated before the next one is added.
+
+## Migration Stance
+
+- Do not keep extending the custom `stow`/profile architecture.
+- Do not delete the current branch work yet.
+- Use the current branch contents as migration reference material.
+- Replace the old path only after the new one is proven end-to-end.
+
+This is a design reset, not a history reset.
 
 ## Validation Checklist
 
-- A fresh macOS host can bootstrap itself with the `host-macos` profile
-- The Lima VM is created with only `/transfer` mounted by default
-- `/workspaces` exists and is group-shared between `dev` and `agent`
-- The `dev` user gets Ruby, Go, Scala, Helm, tmux, shell config, and the `mynvim` bridge
-- The `agent` user gets OpenCode config and no sudo
-- Both users can execute the shared toolchain from `mise`
-- `mynvim` can attach to PATH-installed LSPs without Mason being required
-- Ruby, Go, Scala, YAML, and Helm templates all have working editor support
-- No host kube config, cloud creds, or admin tooling is leaked into the VM
+### Minimal work scope
 
-## Recommended Implementation Sequence
+- A fresh macOS host can bootstrap with `target=host` and `context=work`.
+- The host gets working `,dev` and `,agent` aliases.
+- Lima creates the Fedora VM with `cloud-init`.
+- The VM boots with `dev` and `agent` present.
+- `/workspaces` exists with shared-group access.
+- `agent` has no sudo by default.
+- `chezmoi` can apply successfully for:
+  - `target=host`, `context=work`
+  - `target=dev`, `context=work`
+  - `target=agent`, `context=work`
+- `chezmoi` prompts for name and email instead of reading them from the repo.
+- The agent gets OpenCode config in the expected location.
+- The initial `mise` manifest resolves successfully.
 
-1. Repository layout plus profile runner
-2. macOS host bootstrap and Lima creation with `/transfer`
-3. Fedora system bootstrap with `/workspaces`
-4. System-wide `mise` spike
-5. Dev profile
-6. Agent profile
+### Later scope
+
+- Additional config packages can be added one by one without breaking existing targets.
+- `context=private` can be introduced without changing the target model.
+
+## Execution Order
+
+1. Replace the plan with the new architecture and stop growing the legacy path.
+2. Add a minimal host bootstrap that installs or verifies Lima and `chezmoi`.
+3. Add the Lima template and `cloud-init` VM bootstrap.
+4. Add a minimal `chezmoi` source state with `target` and `context` selectors.
+5. Prove `target=host`, `target=dev`, and `target=agent` for `context=work`.
+6. Add the first config package after the minimal flow is proven.
+7. Continue package-by-package until the work setup reaches parity.
+8. Add `context=private` later on the same architecture.

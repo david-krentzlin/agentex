@@ -11,24 +11,48 @@ if ! command -v brew >/dev/null 2>&1; then
 	exit 1
 fi
 
-if ! command -v stow >/dev/null 2>&1; then
-	brew install stow
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+CONTEXT="work"
+SKIP_APPLY=0
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	--context)
+		CONTEXT="$2"
+		shift 2
+		;;
+	--skip-apply)
+		SKIP_APPLY=1
+		shift
+		;;
+	-h | --help)
+		echo "Usage: bootstrap/host/macos.sh [--context work] [--skip-apply]"
+		exit 0
+		;;
+	*)
+		echo "Error: unknown argument '$1'." >&2
+		exit 1
+		;;
+	esac
+done
+
+if [[ "$CONTEXT" != "work" ]]; then
+	echo "Error: only context=work is implemented right now." >&2
+	exit 1
+fi
+
+if ! command -v chezmoi >/dev/null 2>&1; then
+	brew install chezmoi
 fi
 
 if ! command -v limactl >/dev/null 2>&1; then
 	brew install lima
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-TRANSFER_DIR="${HOME}/VMTransfer"
-
-# shellcheck source=lib/profile.sh
-source "$REPO_ROOT/lib/profile.sh"
-
-mkdir -p "$TRANSFER_DIR"
-apply_profile host-macos "$HOME"
+if [[ "$SKIP_APPLY" -eq 0 ]]; then
+	"$REPO_ROOT/bootstrap/apply-chezmoi.sh" --target host --context "$CONTEXT"
+fi
 
 echo "Host bootstrap complete."
-echo "Transfer directory: $TRANSFER_DIR"
 echo "Next: run bootstrap/vm/macos-create-fedora.sh"

@@ -1,0 +1,8 @@
+{{- if ne .target "host" }}
+.local/bin/,dev
+.local/bin/,agent
+{{- end }}
+{{- if ne .target "agent" }}
+.config/opencode
+.config/opencode/**
+{{- end }}

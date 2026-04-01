@@ -1,0 +1,29 @@
+#!/bin/bash
+set -eux -o pipefail
+
+AGENT_USER="agent"
+DEV_GROUP="devvm"
+
+dnf install -y git curl sudo ca-certificates chezmoi
+
+if ! getent group "$DEV_GROUP" >/dev/null 2>&1; then
+	groupadd -f "$DEV_GROUP"
+fi
+
+usermod -a -G "$DEV_GROUP" dev
+
+if ! id "$AGENT_USER" >/dev/null 2>&1; then
+	useradd -m -s /bin/bash -G "$DEV_GROUP" "$AGENT_USER"
+else
+	usermod -a -G "$DEV_GROUP" "$AGENT_USER"
+fi
+
+install -d -m 2775 -o root -g "$DEV_GROUP" /workspaces
+
+if ! command -v mise >/dev/null 2>&1; then
+	if dnf copr enable -y jdxcode/mise; then
+		dnf install -y mise
+	else
+		curl https://mise.run | MISE_INSTALL_PATH=/usr/local/bin/mise sh
+	fi
+fi

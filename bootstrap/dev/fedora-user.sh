@@ -10,6 +10,10 @@ source "$REPO_ROOT/lib/profile.sh"
 mkdir -p "$HOME/.config" "$HOME/.local/bin"
 apply_profile dev-fedora "$HOME"
 
+if command -v mise >/dev/null 2>&1; then
+	mise trust -y "$HOME/.config/mise/config.toml"
+fi
+
 echo "Dev user bootstrap complete."
 echo "Clone or link mynvim separately if needed."
 echo "Next: run bootstrap/agent/create-user.sh"

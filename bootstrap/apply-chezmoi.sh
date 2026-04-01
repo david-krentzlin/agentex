@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SOURCE_DIR="$REPO_ROOT/chezmoi"
+CONFIG_TEMPLATE="$SOURCE_DIR/.chezmoi.toml.tmpl"
+TARGET=""
+CONTEXT=""
+DEST_DIR="$HOME"
+NAME=""
+EMAIL=""
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/chezmoi"
+STATE_FILE=""
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	--target)
+		TARGET="$2"
+		shift 2
+		;;
+	--context)
+		CONTEXT="$2"
+		shift 2
+		;;
+	--destination)
+		DEST_DIR="$2"
+		shift 2
+		;;
+	--name)
+		NAME="$2"
+		shift 2
+		;;
+	--email)
+		EMAIL="$2"
+		shift 2
+		;;
+	--state-file)
+		STATE_FILE="$2"
+		shift 2
+		;;
+	-h | --help)
+		echo "Usage: bootstrap/apply-chezmoi.sh --target {host|dev|agent} --context {work|private} [--destination DIR] [--name NAME] [--email EMAIL] [--state-file FILE]"
+		exit 0
+		;;
+	*)
+		echo "Error: unknown argument '$1'." >&2
+		exit 1
+		;;
+	esac
+done
+
+if ! command -v chezmoi >/dev/null 2>&1; then
+	echo "Error: chezmoi is required but was not found on PATH." >&2
+	exit 1
+fi
+
+if [[ -z "$TARGET" || -z "$CONTEXT" ]]; then
+	echo "Error: --target and --context are required." >&2
+	exit 1
+fi
+
+if [[ ! -f "$CONFIG_TEMPLATE" ]]; then
+	echo "Error: chezmoi config template not found: $CONFIG_TEMPLATE" >&2
+	exit 1
+fi
+
+if [[ -z "$STATE_FILE" ]]; then
+	STATE_FILE="$STATE_DIR/chezmoistate.boltdb"
+fi
+
+mkdir -p "$(dirname "$STATE_FILE")"
+
+TMP_CONFIG="$(mktemp "${TMPDIR:-/tmp}/agentex-chezmoi-config.XXXXXX.toml")"
+cleanup() {
+	rm -f "$TMP_CONFIG"
+}
+trap cleanup EXIT
+
+chezmoi execute-template \
+	--init \
+	--file \
+	--promptString "Target=$TARGET,Context=$CONTEXT,Git author name=$NAME,Git author email=$EMAIL" \
+	"$CONFIG_TEMPLATE" >"$TMP_CONFIG"
+
+chezmoi \
+	--config "$TMP_CONFIG" \
+	--destination "$DEST_DIR" \
+	--persistent-state "$STATE_FILE" \
+	--source "$SOURCE_DIR" \
+	apply

@@ -1,0 +1,5 @@
+[data]
+target = {{ promptStringOnce . "target" "Target" | quote }}
+context = {{ promptStringOnce . "context" "Context" | quote }}
+name = {{ promptStringOnce . "name" "Git author name" | quote }}
+email = {{ promptStringOnce . "email" "Git author email" | quote }}

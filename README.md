@@ -1,58 +1,95 @@
 # agentex
 
-`agentex` bootstraps an isolated OpenCode development environment. 
+`agentex` bootstraps a repeatable development environment around a small set of standard tools:
 
-The goal is simple: keep your host machine clean, run coding agents inside an isolated VM, and start pairing quickly with a repeatable setup.
+- Lima for the Fedora VM on macOS
+- `cloud-init` for first-boot VM provisioning
+- `chezmoi` for user configuration
+- `mise` for runtimes and developer tools
 
-The repository is being restructured into three setup scopes:
+The architecture is defined in `DEV_ENV_PLAN.md`.
 
-- `host` for the bare macOS host setup
-- `dev` for the Fedora development VM user
-- `agent` for the Fedora agent user
+## Configuration Model
 
-The migration plan lives in `DEV_ENV_PLAN.md`.
+This repository is moving to two explicit selectors:
 
-For handing work to an agent running on the macOS host, use `HOST_AGENT_HANDOFF.md`.
+- `target`: `host`, `dev`, `agent`
+- `context`: `work`, `private`
 
-## Quickstart
+Current implementation scope is `context=work` only.
 
-Currently only the host bootstrap is macOS-specific. The OpenCode config in `templates/dot-config/opencode/` is shared across systems. Pure Linux setup will follow with a similar architecture.
+Meaning:
 
-See [MACOS Instructions](/macos/opencode-lima-setup.md) for details.
+- `host` is the host machine
+- `dev` is the Fedora VM development user
+- `agent` is the Fedora VM agent user
 
-New bootstrap entrypoints are being introduced under `bootstrap/` for the long-term layout:
+## Current Direction
 
-- `bootstrap/host/macos.sh`
-- `bootstrap/vm/macos-create-fedora.sh`
-- `bootstrap/dev/fedora-system.sh`
-- `bootstrap/dev/fedora-user.sh`
-- `bootstrap/agent/create-user.sh`
-- `bootstrap/agent/fedora-user.sh`
+The old custom `stow` and split bootstrap flow is now legacy reference material.
 
-The Fedora system bootstrap now installs a shared `mise` toolchain store and uses these repo-managed manifests:
+The preferred direction is:
 
-- `packages/dev/mise/dot-config/mise/config.toml`
-- `packages/dev/lsps/node-packages.txt`
-- `packages/dev/lsps/ruby-gems.txt`
-- `packages/dev/lsps/go-tools.txt`
-- `packages/dev/lsps/coursier-apps.txt`
+1. run `bootstrap/host/macos.sh`
+2. create the Fedora VM with `bootstrap/vm/macos-create-fedora.sh`
+3. apply config with `bootstrap/apply-chezmoi.sh`
+4. add config and tooling incrementally
 
-Host sharing is off by default. If you want to edit a project on the host while the agent works on it inside the VM, run `macos/bootstrap-host.sh --shared-dir /absolute/host/path` to mount that directory inside the guest at `~/Code`.
+## Minimal First Slice
 
-## Repository layout
+The first slice aims to prove the architecture, not full parity.
+
+Included now:
+
+- minimal macOS host bootstrap for `chezmoi` and Lima
+- minimal Lima template for a Fedora work VM
+- cloud-init-backed VM provisioning for:
+  - `dev`
+  - `agent`
+  - shared `/workspaces`
+  - minimal base packages
+  - `chezmoi`
+  - `mise`
+- minimal `chezmoi` source state for:
+  - git identity
+  - host `,dev` and `,agent` entry commands
+  - target/context marker config
+
+Note: the host `,dev` entry uses `sudo -iu dev` inside the VM so the `dev` login sees the shared `devvm` group membership established during first boot.
+
+Deferred until later:
+
+- `zsh`
+- `starship`
+- `tmux`
+- Neovim integration
+- extra CLI tools
+- LSP stacks
+- full private context support
+- full OpenCode config migration into `chezmoi`
+
+## Repository Layout
+
+The key directories for the new path are:
 
 ```text
 .
-├── README.md
-├── templates
-│   └── dot-config
-│       └── opencode
-│           ├── AGENTS.md
-│           ├── commands
-│           ├── opencode.json
-│           └── skills
-└── macos
-    ├── bootstrap-host.sh
-    ├── bootstrap-vm.sh
-    └── opencode-lima-setup.md
+├── bootstrap/
+│   ├── apply-chezmoi.sh
+│   ├── host/
+│   │   └── macos.sh
+│   └── vm/
+│       └── macos-create-fedora.sh
+├── chezmoi/
+├── cloud-init/
+├── lima/
+└── mise/
 ```
+
+The older `packages/`, `profiles/`, and related helpers remain in the tree as migration reference and should not be expanded further.
+
+## Next Steps
+
+1. Prove `target=host`, `target=dev`, and `target=agent` for `context=work`
+2. Port only one config package at a time
+3. Add `context=private` after the work setup is stable

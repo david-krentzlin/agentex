@@ -8,6 +8,15 @@ mise_repo_config_file() {
 	printf '%s/packages/dev/mise/dot-config/mise/config.toml\n' "$repo_root"
 }
 
+trust_mise_config_if_present() {
+	local config_file="$1"
+	if [[ ! -f "$config_file" ]]; then
+		return
+	fi
+
+	run_as_root mise trust -y "$config_file"
+}
+
 run_mise_system() {
 	local repo_root="$1"
 	shift
@@ -35,6 +44,18 @@ install_system_mise() {
 
 	run_as_root install -d -m 755 "$MISE_SYSTEM_DATA_DIR_DEFAULT"
 	run_as_root install -d -m 755 "$MISE_SYSTEM_SHARED_BIN_DIR_DEFAULT"
+}
+
+trust_system_mise_configs() {
+	local repo_root="$1"
+	local repo_config_file
+
+	repo_config_file="$(mise_repo_config_file "$repo_root")"
+	trust_mise_config_if_present "$repo_config_file"
+
+	if [[ -n "${SUDO_HOME:-}" ]]; then
+		trust_mise_config_if_present "$SUDO_HOME/.config/mise/config.toml"
+	fi
 }
 
 read_non_comment_lines() {
@@ -90,17 +111,17 @@ install_system_go_tools() {
 
 coursier_download_url() {
 	case "$(uname -m)" in
-		x86_64 | amd64)
-			printf '%s\n' 'https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz'
-			;;
-		aarch64 | arm64)
-			printf '%s\n' 'https://github.com/coursier/launchers/raw/master/cs-aarch64-pc-linux.gz'
-			;;
-		*)
-			echo "Error: unsupported architecture for coursier: $(uname -m)" >&2
-			return 1
-			;;
-	 esac
+	x86_64 | amd64)
+		printf '%s\n' 'https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz'
+		;;
+	aarch64 | arm64)
+		printf '%s\n' 'https://github.com/coursier/launchers/raw/master/cs-aarch64-pc-linux.gz'
+		;;
+	*)
+		echo "Error: unsupported architecture for coursier: $(uname -m)" >&2
+		return 1
+		;;
+	esac
 }
 
 install_system_coursier() {

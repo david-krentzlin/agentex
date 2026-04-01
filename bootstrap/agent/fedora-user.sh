@@ -13,6 +13,10 @@ chmod 700 "$HOME/.ssh"
 
 apply_profile agent-fedora "$HOME"
 
+if command -v mise >/dev/null 2>&1; then
+	mise trust -y "$HOME/.config/mise/config.toml"
+fi
+
 if [[ ! -f "$SSH_KEY_PATH" ]]; then
 	ssh-keygen -t ed25519 -C "agent-vm" -f "$SSH_KEY_PATH" -N ""
 	chmod 600 "$SSH_KEY_PATH"
