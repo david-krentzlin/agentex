@@ -1,4 +1,4 @@
-{{- $host := and (not .develop) (not .needs_opencode) -}}
+{{- $host := not .develop -}}
 {{- $work := ne .work_username "" -}}
 {{- $needsNeovim := .develop -}}
 {{- if hasKey . "needs_neovim" }}{{- $needsNeovim = .needs_neovim }}{{- end }}

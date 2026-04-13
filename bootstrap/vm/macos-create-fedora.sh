@@ -57,5 +57,4 @@ limactl start --name="$INSTANCE_NAME" "$TEMPLATE_PATH"
 
 echo "Fedora VM '$INSTANCE_NAME' created."
 echo "Dev shell:   limactl shell --workdir /home/dev $INSTANCE_NAME sudo -iu dev"
-echo "Agent shell: limactl shell --workdir /home/dev $INSTANCE_NAME sudo -iu agent"
-echo "Then run chezmoi init --apply david-krentzlin/home-sweet-home as dev and agent."
+echo "Then run chezmoi init --apply david-krentzlin/home-sweet-home as dev."

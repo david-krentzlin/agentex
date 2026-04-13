@@ -1,6 +1,9 @@
 {{- $needsNeovim := .develop -}}
 {{- if hasKey . "needs_neovim" }}{{- $needsNeovim = .needs_neovim }}{{- end }}
+{{- $myNvimEnv := "" -}}
+{{- if hasKey . "mynvim_env" }}{{- $myNvimEnv = .mynvim_env }}{{- else if ne .work_username "" }}{{- $myNvimEnv = "work" }}{{- else }}{{- $myNvimEnv = "private" }}{{- end }}
 develop = {{ .develop }}
 needs_opencode = {{ .needs_opencode }}
 needs_neovim = {{ $needsNeovim }}
+mynvim_env = {{ $myNvimEnv | quote }}
 work = {{ if ne .work_username "" }}true{{ else }}false{{ end }}

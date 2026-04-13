@@ -91,32 +91,6 @@ local function split_into_vm(command_name)
   }
 end
 
-local function remote_session_picker(window, pane)
-  window:perform_action(
-    act.InputSelector {
-      title = "Remote session",
-      choices = {
-        { id = ",dev", label = "dev" },
-        { id = ",agent", label = "agent" },
-      },
-      fuzzy = false,
-      action = wezterm.action_callback(function(prompt_window, prompt_pane, id, label)
-        if not id and not label then
-          return
-        end
-
-        local command_name = trim_whitespace(id or label or "")
-        if command_name == "" then
-          return
-        end
-
-        prompt_window:perform_action(split_into_vm(command_name), prompt_pane)
-      end),
-    },
-    pane
-  )
-end
-
 local function project_workspace_picker(window, pane)
   local query_command = "zoxide query -l"
   if project_picker_base_dir then
@@ -387,7 +361,7 @@ config.keys = {
   { key = "w", mods = "LEADER",       action = wezterm.action_callback(workspace_switcher) },
   { key = "w", mods = "LEADER|SHIFT", action = wezterm.action_callback(prompt_new_workspace) },
   { key = "d", mods = "LEADER",       action = split_into_vm(",dev") },
-  { key = "r", mods = "LEADER",       action = wezterm.action_callback(remote_session_picker) },
+  { key = "r", mods = "LEADER",       action = split_into_vm(",dev") },
   { key = "r", mods = "LEADER|SHIFT", action = act.ReloadConfiguration },
   { key = "R", mods = "LEADER|SHIFT", action = wezterm.action_callback(prompt_rename_workspace) },
   { key = ",", mods = "LEADER",       action = wezterm.action_callback(pmd_context_picker) },

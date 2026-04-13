@@ -1,4 +1,4 @@
-{{- $host := and (not .develop) (not .needs_opencode) -}}
+{{- $host := not .develop -}}
 {{- if ne .work_username "" }}
 if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/home-sweet-home/jfrog-oidc.env" ]]; then
 	source "${XDG_CONFIG_HOME:-$HOME/.config}/home-sweet-home/jfrog-oidc.env"

@@ -1,6 +1,6 @@
 # home-sweet-home
 
-Dotfiles for my host plus an isolated Fedora VM for development and agent work.
+Dotfiles for my host plus an isolated Fedora VM for development.
 
 
 ## First-Time Setup
@@ -43,44 +43,20 @@ chezmoi init --apply david-krentzlin/home-sweet-home
 When `chezmoi` prompts as `dev`, answer:
 
 - `Will you develop on this machine?` -> `yes`
-- `Will you need opencode on this machine?` -> `no`
+- `Will you need opencode on this machine?` -> `yes` if you want OpenCode in the VM, otherwise `no`
 - `Will you need Neovim on this machine?` -> `yes`
+- `Neovim environment (work/private)` -> `work`
 - fill in the same identity values as on the host
 
-#### VM as `agent`
-
-```bash
-limactl shell --workdir /home/agent dev sudo -iu agent
-# or
-,agent
-```
-
-Run inside the VM as `agent`:
-
-```bash
-mkdir -p "$HOME/.ssh"
-chmod 700 "$HOME/.ssh"
-ssh-keygen -q -t ed25519 -N '' -C "agent@dev" -f "$HOME/.ssh/id_ed25519"
-chezmoi init --apply david-krentzlin/home-sweet-home
-```
-
-When `chezmoi` prompts as `agent`, answer:
-
-- `Will you develop on this machine?` -> `no`
-- `Will you need opencode on this machine?` -> `yes`
-- `Will you need Neovim on this machine?` -> `no`
-- fill in the same identity values as on the host
-
-Open the VM as `dev` or `agent` when you need a shell.
+Open the VM as `dev` when you need a shell.
 
 ```bash
 ,dev
-,agent
 ```
 
-Use `,dev` and `,agent` instead of raw `limactl shell` commands.
+Use `,dev` instead of raw `limactl shell` commands.
 
-Repos under `/workspaces` are intended to be shared between `dev` and `agent`.
+Keep repos under `/workspaces` in the VM.
 
 `chezmoi` can read this repo directly from GitHub because the repo root now contains `.chezmoiroot` pointing at `chezmoi/`.
 
@@ -115,20 +91,18 @@ That delivers the auth callback to the OpenCode process running inside the VM.
 * Managed dotfiles for your host machine
 * A virtual machine that is used to isolate all development from the host system
 * Managed dotfiles for the `dev` user in the development VM
-* [Optional] an `agent` setup using opencode in the development VM
+* Optional OpenCode setup in the development VM
 
 ## Daily Use
 
 - Open the dev shell with `,dev`
-- Open the agent shell with `,agent`
 - Re-apply the current machine config with `,chezmoi-init`
 - Show the VM IP with `,vm-ip`
 - Open a VM-hosted service in the browser with `,vm-open 9000`
 - Create the VM from the host with `,create-vm`
 - Keep shared repos under `/workspaces` on the vm
 - Pull and apply host changes with `,chezmoi-update`
-- Pull and apply VM changes with `,chezmoi-update` as `dev` or `agent`, including `mynvim` when enabled
-- Apply as `dev` first, then as `agent`, if you update both VM users
+- Pull and apply VM changes with `,chezmoi-update` as `dev`, including `mynvim` when enabled
 - For OpenCode browser auth in the VM, finish login on the host and `curl` the final localhost callback URL from inside the VM
 
 ## Access VM Servers From The Host
@@ -186,8 +160,7 @@ Sync credentials for a VM user with:
 
 ```bash
 ,jfrog_oidc_env
-,sync-jfrog-to-vm --target dev --host your.jfrog.example.com
-,sync-jfrog-to-vm --target agent --host your.jfrog.example.com
+,sync-jfrog-to-vm --host your.jfrog.example.com
 ```
 
 The default realm is `Artifactory Realm`. If your setup differs, pass `--realm` explicitly.

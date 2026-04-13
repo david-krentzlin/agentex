@@ -1,10 +1,9 @@
-{{- $host := and (not .develop) (not .needs_opencode) -}}
+{{- $host := not .develop -}}
 {{- $work := ne .work_username "" -}}
 {{- $needsNeovim := .develop -}}
 {{- if hasKey . "needs_neovim" }}{{- $needsNeovim = .needs_neovim }}{{- end }}
 {{- if not $host }}
 .local/bin/,dev
-.local/bin/,agent
 .local/bin/,create-vm
 .local/bin/,sync-jfrog-to-vm
 .config/ghostty

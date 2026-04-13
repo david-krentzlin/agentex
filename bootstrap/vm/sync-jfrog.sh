@@ -28,7 +28,6 @@ url_encode() {
 }
 
 INSTANCE_NAME="dev"
-TARGET=""
 JFROG_HOST=""
 JFROG_REALM="Artifactory Realm"
 RUBY_HOST=""
@@ -37,10 +36,6 @@ while [[ $# -gt 0 ]]; do
 	case "$1" in
 	--vm-name)
 		INSTANCE_NAME="$2"
-		shift 2
-		;;
-	--target)
-		TARGET="$2"
 		shift 2
 		;;
 	--host)
@@ -56,7 +51,7 @@ while [[ $# -gt 0 ]]; do
 		shift 2
 		;;
 	-h | --help)
-		echo "Usage: bootstrap/vm/sync-jfrog.sh --target {dev|agent} --host HOST [--realm REALM] [--ruby-host HOST] [--vm-name NAME]"
+		echo "Usage: bootstrap/vm/sync-jfrog.sh --host HOST [--realm REALM] [--ruby-host HOST] [--vm-name NAME]"
 		exit 0
 		;;
 	*)
@@ -65,12 +60,6 @@ while [[ $# -gt 0 ]]; do
 		;;
 	esac
 done
-
-if [[ "$TARGET" != "dev" && "$TARGET" != "agent" ]]; then
-	echo "Error: --target must be one of: dev, agent." >&2
-	exit 1
-fi
-
 if [[ -z "$JFROG_HOST" ]]; then
 	echo "Error: --host is required." >&2
 	exit 1
@@ -139,7 +128,7 @@ chmod 600 "$coursier_dir/credentials.properties"
 EOF
 } >"$TMP_REMOTE_SCRIPT"
 
-cat "$TMP_REMOTE_SCRIPT" | limactl shell --workdir /home/dev "$INSTANCE_NAME" sudo -iu "$TARGET" bash -s
+cat "$TMP_REMOTE_SCRIPT" | limactl shell --workdir /home/dev "$INSTANCE_NAME" sudo -iu dev bash -s
 
-echo "Synced JFrog credentials for $TARGET on VM $INSTANCE_NAME"
+echo "Synced JFrog credentials for dev on VM $INSTANCE_NAME"
 echo "Bundler host: $RUBY_HOST"

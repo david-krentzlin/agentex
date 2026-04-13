@@ -5,10 +5,24 @@
 {{- $needsOpencode := or (eq $needsOpencodeAnswer "y") (eq $needsOpencodeAnswer "yes") (eq $needsOpencodeAnswer "true") (eq $needsOpencodeAnswer "1") -}}
 {{- $needsNeovim := or (eq $needsNeovimAnswer "y") (eq $needsNeovimAnswer "yes") (eq $needsNeovimAnswer "true") (eq $needsNeovimAnswer "1") -}}
 {{- $workUsername := promptStringOnce . "work_username" "Work username (leave blank if not applicable)" -}}
+{{- $myNvimEnv := "" -}}
+{{- if $needsNeovim -}}
+{{- $myNvimEnvAnswer := promptStringOnce . "mynvim_env" "Neovim environment (work/private)" | trim | lower -}}
+{{- if eq $myNvimEnvAnswer "work" -}}
+{{- $myNvimEnv = "work" -}}
+{{- else if eq $myNvimEnvAnswer "private" -}}
+{{- $myNvimEnv = "private" -}}
+{{- else if ne $workUsername "" -}}
+{{- $myNvimEnv = "work" -}}
+{{- else -}}
+{{- $myNvimEnv = "private" -}}
+{{- end -}}
+{{- end -}}
 [data]
 develop = {{ $develop }}
 needs_opencode = {{ $needsOpencode }}
 needs_neovim = {{ $needsNeovim }}
+mynvim_env = {{ $myNvimEnv | quote }}
 name = {{ promptStringOnce . "name" "Git author name" | quote }}
 email = {{ promptStringOnce . "email" "Git author email" | quote }}
 github_username = {{ promptStringOnce . "github_username" "GitHub username" | quote }}

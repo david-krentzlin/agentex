@@ -1,1 +1,3 @@
-export MYNVIM_ENV={{ if ne .work_username "" }}"work"{{ else }}"private"{{ end }}
+{{- $myNvimEnv := "" -}}
+{{- if hasKey . "mynvim_env" }}{{- $myNvimEnv = .mynvim_env }}{{- else if ne .work_username "" }}{{- $myNvimEnv = "work" }}{{- else }}{{- $myNvimEnv = "private" }}{{- end }}
+export MYNVIM_ENV={{ $myNvimEnv | quote }}

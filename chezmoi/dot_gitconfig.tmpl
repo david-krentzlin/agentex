@@ -1,4 +1,4 @@
-{{- $host := and (not .develop) (not .needs_opencode) -}}
+{{- $host := not .develop -}}
 {{- $work := ne .work_username "" -}}
 [user]
 	name = {{ .name | quote }}
