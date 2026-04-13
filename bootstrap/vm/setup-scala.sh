@@ -36,7 +36,12 @@ mise trust "$HOME/.config/mise/config.toml"
 mise install
 
 if ! mise exec -- sh -lc 'command -v cs >/dev/null 2>&1'; then
-	echo "Error: coursier (cs) is still not available after mise install." >&2
+	echo "coursier (cs) is not available from the current mise config; installing Scala prerequisites explicitly"
+	mise install java "github:coursier/coursier" "github:scalameta/scalafmt"
+fi
+
+if ! mise exec -- sh -lc 'command -v cs >/dev/null 2>&1'; then
+	echo "Error: coursier (cs) is still not available after explicit mise install." >&2
 	exit 1
 fi
 
