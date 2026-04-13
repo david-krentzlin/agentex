@@ -10,7 +10,7 @@ if ! command -v git >/dev/null 2>&1; then
 fi
 
 NVIM_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
-NVIM_REPO="https://github.com/david-krentzlin/mynvim.git"
+NVIM_REPO="https://codeberg.org/certainty/mynvim.git"
 
 if [[ ! -e "$NVIM_DIR" ]]; then
 	exec git clone --depth 1 "$NVIM_REPO" "$NVIM_DIR"
@@ -18,7 +18,7 @@ fi
 
 if [[ -d "$NVIM_DIR/.git" ]]; then
 	origin_url="$(git -C "$NVIM_DIR" remote get-url origin 2>/dev/null || true)"
-	if [[ "$origin_url" != "$NVIM_REPO" && "$origin_url" != "git@github.com:david-krentzlin/mynvim.git" ]]; then
+	if [[ "$origin_url" != "$NVIM_REPO" && "$origin_url" != "git@codeberg.org:certainty/mynvim.git" ]]; then
 		echo "Error: $NVIM_DIR already exists but does not track $NVIM_REPO." >&2
 		exit 1
 	fi

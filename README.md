@@ -84,9 +84,12 @@ Repos under `/workspaces` are intended to be shared between `dev` and `agent`.
 
 `chezmoi` can read this repo directly from GitHub because the repo root now contains `.chezmoiroot` pointing at `chezmoi/`.
 
-If `Will you need Neovim on this machine?` is `yes`, `chezmoi` also keeps a shallow clone of `https://github.com/david-krentzlin/mynvim` at `~/.config/nvim`.
+If `Will you need Neovim on this machine?` is `yes`, `chezmoi` also keeps a shallow clone of `https://codeberg.org/certainty/mynvim` at `~/.config/nvim`.
 
-Every machine also gets a `,chezmoi` helper that runs `chezmoi apply`.
+Every machine also gets:
+
+- `,chezmoi-init` to run `chezmoi apply`
+- `,chezmoi-update` to run `chezmoi update`
 
 Use `david-krentzlin/home-sweet-home` with `chezmoi init`. Username-only shorthand resolves to `david-krentzlin/dotfiles`, which is not this repo.
 
@@ -101,13 +104,13 @@ Use `david-krentzlin/home-sweet-home` with `chezmoi init`. Username-only shortha
 
 - Open the dev shell with `,dev`
 - Open the agent shell with `,agent`
-- Re-apply the current machine config with `,chezmoi`
+- Re-apply the current machine config with `,chezmoi-init`
 - Show the VM IP with `,vm-ip`
 - Open a VM-hosted service in the browser with `,vm-open 9000`
 - Create the VM from the host with `,create-vm`
 - Keep shared repos under `/workspaces` on the vm
-- Run `chezmoi update` on the host to pull helper and dotfile changes, then `,chezmoi`
-- Run `chezmoi update` as `dev` or `agent` in the VM to pull and apply dotfile changes, including `mynvim` when enabled
+- Pull and apply host changes with `,chezmoi-update`
+- Pull and apply VM changes with `,chezmoi-update` as `dev` or `agent`, including `mynvim` when enabled
 - Apply as `dev` first, then as `agent`, if you update both VM users
 
 ## Access VM Servers From The Host
