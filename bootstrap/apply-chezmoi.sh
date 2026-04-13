@@ -7,6 +7,8 @@ SOURCE_DIR="$REPO_ROOT/chezmoi"
 CONFIG_TEMPLATE="$SOURCE_DIR/.chezmoi.toml.tmpl"
 TARGET=""
 CONTEXT=""
+DEVELOP_PROMPT="no"
+OPENCODE_PROMPT="no"
 DEST_DIR="$HOME"
 NAME=""
 EMAIL=""
@@ -91,13 +93,28 @@ fi
 
 mkdir -p "$(dirname "$CONFIG_FILE")" "$(dirname "$STATE_FILE")"
 
+case "$TARGET" in
+host)
+	DEVELOP_PROMPT="no"
+	OPENCODE_PROMPT="no"
+	;;
+dev)
+	DEVELOP_PROMPT="yes"
+	OPENCODE_PROMPT="no"
+	;;
+agent)
+	DEVELOP_PROMPT="no"
+	OPENCODE_PROMPT="yes"
+	;;
+esac
+
 INIT_ARGS=(
 	init
 	--source "$SOURCE_DIR"
 	--config-path "$CONFIG_FILE"
 	--destination "$DEST_DIR"
-	--promptString "Target=$TARGET"
-	--promptString "Context=$CONTEXT"
+	--promptString "Will you develop on this machine?=$DEVELOP_PROMPT"
+	--promptString "Will you need opencode on this machine?=$OPENCODE_PROMPT"
 )
 
 if [[ -n "$NAME" ]]; then
@@ -112,17 +129,22 @@ if [[ -n "$GITHUB_USERNAME" ]]; then
 	INIT_ARGS+=(--promptString "GitHub username=$GITHUB_USERNAME")
 fi
 
-if [[ "$CONTEXT" == "work" && -n "$WORK_USERNAME" ]]; then
-	INIT_ARGS+=(--promptString "Work username=$WORK_USERNAME")
+if [[ -n "$WORK_USERNAME" ]]; then
+	INIT_ARGS+=(--promptString "Work username (leave blank if not applicable)=$WORK_USERNAME")
+elif [[ "$CONTEXT" == "private" ]]; then
+	INIT_ARGS+=(--promptString "Work username (leave blank if not applicable)=")
 fi
 
 if [[ ! -f "$CONFIG_FILE" ]] ||
+	! grep -Fq 'develop =' "$CONFIG_FILE" ||
+	! grep -Fq 'needs_opencode =' "$CONFIG_FILE" ||
 	grep -Fq 'target = "Target"' "$CONFIG_FILE" ||
 	grep -Fq 'context = "Context"' "$CONFIG_FILE" ||
 	grep -Fq 'name = "Git author name"' "$CONFIG_FILE" ||
 	grep -Fq 'email = "Git author email"' "$CONFIG_FILE" ||
 	grep -Fq 'github_username = "GitHub username"' "$CONFIG_FILE" ||
-	grep -Fq 'work_username = "Work username"' "$CONFIG_FILE"; then
+	grep -Fq 'work_username = "Work username"' "$CONFIG_FILE" ||
+	grep -Fq 'work_username = "Work username (leave blank if not applicable)"' "$CONFIG_FILE"; then
 	chezmoi "${INIT_ARGS[@]}"
 fi
 

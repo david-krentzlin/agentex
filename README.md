@@ -1,43 +1,71 @@
 # home-sweet-home
 
-Setup my environments for both work and private context.
-Manage dotfiles and unified tools.
+Dotfiles for my host plus an isolated Fedora VM for development and agent work.
 
 
 ## First-Time Setup
 
 ### Work
 
-1. Clone this repo on your mac.
-2. Run the host bootstrap.
+#### Host
 
 ```bash
-./bootstrap/host/macos.sh --context work
+git clone https://github.com/david-krentzlin/home-sweet-home.git
+cd home-sweet-home
+brew bundle --file bootstrap/host/Brewfile.work
+chezmoi init --apply david-krentzlin/home-sweet-home
+,create-vm
 ```
 
-3. Create the Fedora VM.
+When `chezmoi` prompts on the host, answer:
+
+- `Will you develop on this machine?` -> `no`
+- `Will you need opencode on this machine?` -> `no`
+- fill in `Git author name`, `Git author email`, `GitHub username`, and `Work username`
+
+#### VM as `dev`
 
 ```bash
-./bootstrap/vm/macos-create-fedora.sh --context work
+limactl shell --workdir /home/dev dev sudo -iu dev
 ```
 
-4. From the host, apply the `dev` user config into the VM.
+Run inside the VM as `dev`:
 
 ```bash
-./bootstrap/vm/apply-user.sh --target dev --context work
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
+ssh-keygen -q -t ed25519 -N '' -C "dev@dev" -f "$HOME/.ssh/id_ed25519"
+chezmoi init --apply david-krentzlin/home-sweet-home
 ```
 
-If `/workspaces/home-sweet-home` is missing in the VM, the helper clones it automatically.
+When `chezmoi` prompts as `dev`, answer:
 
-5. From the host, apply the `agent` user config into the VM.
+- `Will you develop on this machine?` -> `yes`
+- `Will you need opencode on this machine?` -> `no`
+- fill in the same identity values as on the host
+
+#### VM as `agent`
 
 ```bash
-./bootstrap/vm/apply-user.sh --target agent --context work
+limactl shell --workdir /home/agent dev sudo -iu agent
 ```
 
-Run the two helper commands in that order.
+Run inside the VM as `agent`:
 
-6. Open the VM as `dev` or `agent` when you need a shell.
+```bash
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
+ssh-keygen -q -t ed25519 -N '' -C "agent@dev" -f "$HOME/.ssh/id_ed25519"
+chezmoi init --apply david-krentzlin/home-sweet-home
+```
+
+When `chezmoi` prompts as `agent`, answer:
+
+- `Will you develop on this machine?` -> `no`
+- `Will you need opencode on this machine?` -> `yes`
+- fill in the same identity values as on the host
+
+Open the VM as `dev` or `agent` when you need a shell.
 
 ```bash
 ,dev
@@ -48,12 +76,16 @@ Use `,dev` and `,agent` instead of raw `limactl shell` commands.
 
 Repos under `/workspaces` are intended to be shared between `dev` and `agent`.
 
+`chezmoi` can read this repo directly from GitHub because the repo root now contains `.chezmoiroot` pointing at `chezmoi/`.
+
+Use `david-krentzlin/home-sweet-home` with `chezmoi init`. Username-only shorthand resolves to `david-krentzlin/dotfiles`, which is not this repo.
+
 ## What you get
 
 * Managed dotfiles for your host machine
-* A virtual machine that is used to isolate all development from the host system 
-* Managed dotfiles for the dev user in the dev vm
-* [Optional] an agent setup for a development agent using opencode in the dev vm
+* A virtual machine that is used to isolate all development from the host system
+* Managed dotfiles for the `dev` user in the development VM
+* [Optional] an `agent` setup using opencode in the development VM
 
 ## Daily Use
 
@@ -61,10 +93,11 @@ Repos under `/workspaces` are intended to be shared between `dev` and `agent`.
 - Open the agent shell with `,agent`
 - Show the VM IP with `,vm-ip`
 - Open a VM-hosted service in the browser with `,vm-open 9000`
+- Create the VM from the host with `,create-vm`
 - Keep shared repos under `/workspaces` on the vm
-- Pull repo changes in the VM repo checkout under `/workspaces/home-sweet-home`
-- Re-run `bootstrap/vm/apply-user.sh` for `dev` or `agent`
-- Apply `dev` first, then `agent`, if you are updating both
+- Update the host repo checkout when you want newer VM helper scripts or docs
+- Run `chezmoi update` as `dev` or `agent` in the VM to pull and apply dotfile changes
+- Apply as `dev` first, then as `agent`, if you update both VM users
 
 ## Access VM Servers From The Host
 
@@ -121,8 +154,8 @@ Sync credentials for a VM user with:
 
 ```bash
 ,jfrog_oidc_env
-./bootstrap/vm/sync-jfrog.sh --target dev --host your.jfrog.example.com
-./bootstrap/vm/sync-jfrog.sh --target agent --host your.jfrog.example.com
+,sync-jfrog-to-vm --target dev --host your.jfrog.example.com
+,sync-jfrog-to-vm --target agent --host your.jfrog.example.com
 ```
 
 The default realm is `Artifactory Realm`. If your setup differs, pass `--realm` explicitly.

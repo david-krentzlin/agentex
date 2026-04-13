@@ -1,13 +1,14 @@
-{{- $target := promptStringOnce . "target" "Target" -}}
-{{- $context := promptStringOnce . "context" "Context" -}}
+{{- $developAnswer := promptStringOnce . "develop" "Will you develop on this machine?" | trim | lower -}}
+{{- $needsOpencodeAnswer := promptStringOnce . "needs_opencode" "Will you need opencode on this machine?" | trim | lower -}}
+{{- $develop := or (eq $developAnswer "y") (eq $developAnswer "yes") (eq $developAnswer "true") (eq $developAnswer "1") -}}
+{{- $needsOpencode := or (eq $needsOpencodeAnswer "y") (eq $needsOpencodeAnswer "yes") (eq $needsOpencodeAnswer "true") (eq $needsOpencodeAnswer "1") -}}
+{{- $workUsername := promptStringOnce . "work_username" "Work username (leave blank if not applicable)" -}}
 [data]
-target = {{ $target | quote }}
-context = {{ $context | quote }}
+develop = {{ $develop }}
+needs_opencode = {{ $needsOpencode }}
+target = {{ if $develop }}"dev"{{ else if $needsOpencode }}"agent"{{ else }}"host"{{ end }}
+context = {{ if ne $workUsername "" }}"work"{{ else }}"private"{{ end }}
 name = {{ promptStringOnce . "name" "Git author name" | quote }}
 email = {{ promptStringOnce . "email" "Git author email" | quote }}
 github_username = {{ promptStringOnce . "github_username" "GitHub username" | quote }}
-{{- if eq $context "work" }}
-work_username = {{ promptStringOnce . "work_username" "Work username" | quote }}
-{{- else }}
-work_username = ""
-{{- end }}
+work_username = {{ $workUsername | quote }}

@@ -4,7 +4,9 @@ install_before = "7d"
 ruby.compile = false
 
 [tools]
+{{- if or (eq .needs_opencode true) (eq .target "agent") }}
 opencode = "latest"
+{{- end }}
 starship = "latest"
 neovim = "latest"
 {{- if ne .target "host" }}

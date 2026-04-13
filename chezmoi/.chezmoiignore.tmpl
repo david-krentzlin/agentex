@@ -1,6 +1,8 @@
 {{- if ne .target "host" }}
 .local/bin/,dev
 .local/bin/,agent
+.local/bin/,create-vm
+.local/bin/,sync-jfrog-to-vm
 .config/ghostty
 .config/ghostty/**
 .config/wezterm
@@ -19,10 +21,10 @@
 .config/zsh/rc.d/10_java
 .config/zsh/rc.d/20_jfrog
 {{- end }}
-{{- if ne .target "agent" }}
+{{- if not (or (eq .needs_opencode true) (eq .target "agent")) }}
 .config/opencode
 .config/opencode/**
 {{- end }}
-{{- if eq .target "agent" }}
+{{- if and (or (eq .needs_opencode true) (eq .target "agent")) (not (or (eq .develop true) (eq .target "dev"))) }}
 .config/zsh/rc.d/30_nvim
 {{- end }}
