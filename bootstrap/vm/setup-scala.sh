@@ -6,6 +6,31 @@ if [[ "$(uname -s)" != "Linux" ]]; then
 	exit 1
 fi
 
+install_coursier_wrapper() {
+	local cs_dir jar_path wrapper_path
+	cs_dir="$HOME/.local/share/coursier"
+	jar_path="$cs_dir/coursier.jar"
+	wrapper_path="$HOME/.local/bin/cs"
+
+	mkdir -p "$cs_dir" "$HOME/.local/bin"
+
+	if command -v curl >/dev/null 2>&1; then
+		curl -fsSL "https://github.com/coursier/coursier/releases/latest/download/coursier.jar" -o "$jar_path"
+	elif command -v wget >/dev/null 2>&1; then
+		wget -qO "$jar_path" "https://github.com/coursier/coursier/releases/latest/download/coursier.jar"
+	else
+		echo "Error: neither curl nor wget is available to install coursier." >&2
+		return 1
+	fi
+
+	cat >"$wrapper_path" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+exec java -jar "$HOME/.local/share/coursier/coursier.jar" "$@"
+EOF
+	chmod 755 "$wrapper_path"
+}
+
 if ! command -v mise >/dev/null 2>&1; then
 	echo "Error: mise is required but was not found on PATH. Run ,chezmoi-init first." >&2
 	exit 1
@@ -37,10 +62,14 @@ mise install
 
 if ! mise exec -- sh -lc 'command -v cs >/dev/null 2>&1'; then
 	echo "coursier (cs) is not available from the current mise config; installing Scala prerequisites explicitly"
-	mise install java "github:coursier/coursier" "github:scalameta/scalafmt"
+	mise install java "github:scalameta/scalafmt"
+	if ! mise exec -- sh -lc 'command -v cs >/dev/null 2>&1'; then
+		echo "Installing coursier manually via coursier.jar"
+		install_coursier_wrapper
+	fi
 fi
 
-if ! mise exec -- sh -lc 'command -v cs >/dev/null 2>&1'; then
+if ! command -v cs >/dev/null 2>&1; then
 	echo "Error: coursier (cs) is still not available after explicit mise install." >&2
 	exit 1
 fi
