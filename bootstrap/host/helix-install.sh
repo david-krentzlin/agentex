@@ -25,6 +25,10 @@ if ! command -v git >/dev/null 2>&1; then
 	exit 1
 fi
 
+if [[ "$install_only" == true ]] && command -v hx >/dev/null 2>&1; then
+	exit 0
+fi
+
 helix_source_dir="${XDG_DATA_HOME:-$HOME/.local/share}/src/helix"
 helix_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/helix"
 helix_runtime_link="$helix_config_dir/runtime"
