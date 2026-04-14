@@ -102,6 +102,7 @@ That delivers the auth callback to the OpenCode process running inside the VM.
 
 - Open the dev shell with `,dev`
 - Re-apply the current machine config with `,chezmoi-init`
+- Open `,cheatsheet` for the terminal tool quick reference
 - Show the VM IP with `,vm-ip`
 - Open a VM-hosted service in the browser with `,vm-open 9000`
 - Create the VM from the host with `,create-vm`

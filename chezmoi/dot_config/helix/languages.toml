@@ -111,6 +111,22 @@ language-servers = [
 auto-format = true
 
 [[language]]
+name = "git-commit"
+text-width = 72
+rulers = [72]
+soft-wrap = { enable = true, wrap-at-text-width = true }
+language-servers = ["harper-ls"]
+auto-format = false
+
+[[language]]
+name = "text"
+text-width = 80
+rulers = [80]
+soft-wrap = { enable = true, wrap-at-text-width = true }
+language-servers = ["harper-ls"]
+auto-format = false
+
+[[language]]
 name = "yaml"
 formatter = { command = "yq", args = ["-P", "."] }
 language-servers = [

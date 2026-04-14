@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+tmpfile="$(mktemp)"
+trap 'rm -f "$tmpfile"' EXIT
+
+cat >"$tmpfile" <<'EOF'
+TOOLS CHEATSHEET
+
+YAZI
+  Launch:
+    yazi
+
+  Basics:
+    h / l       go to parent / enter directory
+    j / k       move
+    g / G       top / bottom
+    Space       select
+    Enter       open
+    q           quit
+
+  Useful:
+    .           toggle hidden files
+    /           search in current list
+    d           cut
+    y           copy
+    p           paste
+    r           rename
+    -           create file or directory
+    x           open with chooser
+
+  In this setup:
+    files open in Helix
+    hidden files are shown by default
+    preview pane is enabled
+
+LAZYGIT
+  Launch:
+    lazygit
+
+  Basics:
+    q           quit
+    ?           keybinding help
+    Tab         switch between side panel and main panel
+    [ / ]       move between panels/tabs
+    j / k       move
+    Enter       open panel item / inspect
+    Esc         back / cancel
+
+  Common file actions:
+    Space       stage or unstage selected file
+    a           stage or unstage all files
+    Enter       open hunk view for selected file
+    c           commit staged changes
+    P           push
+    p           pull
+    e           open selected file in Helix
+
+  Branches and commits:
+    3           branches panel (or cycle with [ / ])
+    n           new branch
+    Space       checkout selected branch
+    rebase / squash / fixup are available from commit views
+
+ZELLIJ
+  Launch:
+    zellij
+
+  Your setup starts locked.
+
+  Mode toggle:
+    Alt-a       unlock to Normal mode
+    Alt-a       lock again from any unlocked mode
+
+  Pane and tab actions after Alt-a:
+    Alt-n       new pane
+    Alt--       split down
+    Alt-\\      split right
+    Alt-h/j/k/l move focus
+    Alt-t       new tab
+    Alt-1..9    go to tab 1..9
+    Ctrl-o      open session manager
+
+  Rename pane:
+    Alt-a, Ctrl-p, c
+
+  Notes:
+    compact layout is enabled
+    pane frames are enabled for focus visibility
+    web server and web sharing are disabled
+
+SCOOTER
+  Launch:
+    scooter
+
+  What it is:
+    interactive project-wide find/replace
+
+  Basics:
+    enter       run search from fields / apply replacements from results
+    Tab         next field
+    Shift-Tab   previous field
+    j / k       move through matches
+    Space       include or exclude current match
+    a           toggle all matches
+    v           multiselect mode
+    e           open match in Helix
+    Ctrl-h      help
+    Ctrl-r      reset back to search screen
+    Ctrl-c      quit
+
+  Useful toggles:
+    Ctrl-t      include hidden files
+    Alt-m       multiline search
+    Alt-e       interpret escape sequences in replacement text
+    Ctrl-l      toggle preview wrapping
+
+  In this setup:
+    e opens Helix at the matching line and exits scooter
+    syntax highlighting uses Catppuccin Mocha
+
+HELIX INTEGRATION YOU ALREADY HAVE
+  Ctrl-e       open Yazi file chooser
+  Ctrl-r       open Scooter
+  Ctrl-g       open Lazygit
+
+Tip:
+  Most of these tools have built-in help on ? or a visible key legend at the bottom.
+EOF
+
+if [[ -t 1 ]] && command -v less >/dev/null 2>&1; then
+	less -R "$tmpfile"
+else
+	cat "$tmpfile"
+fi
