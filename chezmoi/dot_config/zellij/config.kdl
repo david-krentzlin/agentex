@@ -18,8 +18,15 @@ keybinds {
     unbind "Ctrl g"
 
     normal {
-        bind "Alt o" {
+        bind "Alt w" {
             LaunchOrFocusPlugin "session-manager" {
+                floating true
+                move_to_focused_tab true
+            }
+            SwitchToMode "Locked"
+        }
+        bind "Alt l" {
+            LaunchOrFocusPlugin "layout-manager" {
                 floating true
                 move_to_focused_tab true
             }
@@ -50,8 +57,14 @@ keybinds {
 
     locked {
         bind "Alt a" { SwitchToMode "Normal"; }
-        bind "Alt o" {
+        bind "Alt w" {
             LaunchOrFocusPlugin "session-manager" {
+                floating true
+                move_to_focused_tab true
+            }
+        }
+        bind "Alt l" {
+            LaunchOrFocusPlugin "layout-manager" {
                 floating true
                 move_to_focused_tab true
             }
