@@ -84,68 +84,6 @@ local function split_into_vm(command_name)
 	})
 end
 
-local function project_workspace_picker(window, pane)
-	local query_command = "zoxide query -l"
-	if project_picker_base_dir then
-		query_command = string.format("%s --base-dir %q", query_command, project_picker_base_dir)
-	end
-
-	local success, stdout, stderr = wezterm.run_child_process({
-		"zsh",
-		"-lic",
-		query_command,
-	})
-
-	if not success then
-		wezterm.log_error("Project picker failed: " .. (stderr or ""))
-		return
-	end
-
-	local choices = {}
-	for line in (stdout or ""):gmatch("[^\r\n]+") do
-		local project_dir = trim_whitespace(line)
-		if project_dir ~= "" then
-			table.insert(choices, {
-				id = project_dir,
-				label = project_dir,
-			})
-		end
-	end
-
-	if #choices == 0 then
-		wezterm.log_info("Project picker: no entries from zoxide")
-		return
-	end
-
-	window:perform_action(
-		act.InputSelector({
-			title = "Project",
-			choices = choices,
-			fuzzy = true,
-			action = wezterm.action_callback(function(prompt_window, prompt_pane, id, label)
-				if not id and not label then
-					return
-				end
-
-				local project_dir = trim_whitespace(id or label or "")
-				if project_dir == "" then
-					return
-				end
-
-				local workspace_name = project_dir:match("([^/]+)$") or project_dir
-				prompt_window:perform_action(
-					act.SwitchToWorkspace({
-						name = workspace_name,
-						spawn = { cwd = project_dir },
-					}),
-					prompt_pane
-				)
-			end),
-		}),
-		pane
-	)
-end
-
 local function prompt_new_workspace(window, pane)
 	window:perform_action(
 		act.PromptInputLine({
@@ -201,49 +139,6 @@ local function prompt_tab_title(window, pane)
 				if prompt_tab then
 					prompt_tab:set_title(trim_whitespace(line))
 				end
-			end),
-		}),
-		pane
-	)
-end
-
-local function workspace_switcher(window, pane)
-	local current_workspace = wezterm.mux.get_active_workspace()
-	local workspaces = wezterm.mux.get_workspace_names()
-	local choices = {}
-
-	for _, workspace_name in ipairs(workspaces or {}) do
-		local label = workspace_name
-		if workspace_name == current_workspace then
-			label = "* " .. workspace_name
-		end
-
-		table.insert(choices, {
-			id = workspace_name,
-			label = label,
-		})
-	end
-
-	if #choices == 0 then
-		return
-	end
-
-	window:perform_action(
-		act.InputSelector({
-			title = "Workspace",
-			choices = choices,
-			fuzzy = true,
-			action = wezterm.action_callback(function(prompt_window, prompt_pane, id, label)
-				if not id and not label then
-					return
-				end
-
-				local target_workspace = trim_whitespace(id or label or "")
-				if target_workspace == "" then
-					return
-				end
-
-				prompt_window:perform_action(act.SwitchToWorkspace({ name = target_workspace }), prompt_pane)
 			end),
 		}),
 		pane
@@ -338,22 +233,11 @@ wezterm.on("gui-startup", function(cmd)
 end)
 
 config.keys = {
-	{ key = "t", mods = "LEADER", action = act.SendKey({ key = "t", mods = "CTRL" }) },
-	{ key = "s", mods = "LEADER", action = wezterm.action_callback(project_workspace_picker) },
-	{ key = "S", mods = "LEADER|SHIFT", action = act.ShowLauncher },
 	{ key = "p", mods = "LEADER", action = act.ActivateCommandPalette },
-	{ key = "w", mods = "LEADER", action = wezterm.action_callback(workspace_switcher) },
-	{ key = "w", mods = "LEADER|SHIFT", action = wezterm.action_callback(prompt_new_workspace) },
 	{ key = "d", mods = "LEADER", action = split_into_vm(",dev") },
 	{ key = "r", mods = "LEADER", action = split_into_vm(",dev") },
 	{ key = "r", mods = "LEADER|SHIFT", action = act.ReloadConfiguration },
 	{ key = "R", mods = "LEADER|SHIFT", action = wezterm.action_callback(prompt_rename_workspace) },
-	{ key = ",", mods = "LEADER", action = wezterm.action_callback(pmd_context_picker) },
-	{
-		key = "c",
-		mods = "LEADER",
-		action = act.SpawnCommandInNewTab({ args = { "zsh", "-lic", "nvim ~/.config/wezterm/wezterm.lua" } }),
-	},
 	{ key = "f", mods = "LEADER", action = act.ToggleFullScreen },
 	{ key = "+", mods = "SUPER", action = act.IncreaseFontSize },
 	{ key = "-", mods = "SUPER", action = act.DecreaseFontSize },
