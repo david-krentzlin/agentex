@@ -7,7 +7,6 @@ end-of-line-diagnostics = "warning"
 color-modes = true
 trim-trailing-whitespace = true
 popup-border = "all"
-auto-info = false
 true-color = true
 
 [editor.cursor-shape]
