@@ -15,6 +15,26 @@ show_startup_tips false
 keybinds {
     unbind "Ctrl g"
 
+    normal {
+        bind "Alt n" { NewPane; SwitchToMode "Locked"; }
+        bind "Alt -" { NewPane "Down"; SwitchToMode "Locked"; }
+        bind "Alt \\" { NewPane "Right"; SwitchToMode "Locked"; }
+        bind "Alt h" { MoveFocus "Left"; SwitchToMode "Locked"; }
+        bind "Alt j" { MoveFocus "Down"; SwitchToMode "Locked"; }
+        bind "Alt k" { MoveFocus "Up"; SwitchToMode "Locked"; }
+        bind "Alt l" { MoveFocus "Right"; SwitchToMode "Locked"; }
+        bind "Alt t" { NewTab; SwitchToMode "Locked"; }
+        bind "Alt 1" { GoToTab 1; SwitchToMode "Locked"; }
+        bind "Alt 2" { GoToTab 2; SwitchToMode "Locked"; }
+        bind "Alt 3" { GoToTab 3; SwitchToMode "Locked"; }
+        bind "Alt 4" { GoToTab 4; SwitchToMode "Locked"; }
+        bind "Alt 5" { GoToTab 5; SwitchToMode "Locked"; }
+        bind "Alt 6" { GoToTab 6; SwitchToMode "Locked"; }
+        bind "Alt 7" { GoToTab 7; SwitchToMode "Locked"; }
+        bind "Alt 8" { GoToTab 8; SwitchToMode "Locked"; }
+        bind "Alt 9" { GoToTab 9; SwitchToMode "Locked"; }
+    }
+
     locked {
         bind "Alt a" { SwitchToMode "Normal"; }
     }
