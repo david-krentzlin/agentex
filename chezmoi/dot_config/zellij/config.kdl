@@ -43,7 +43,7 @@ keybinds {
         bind "Alt r" { SwitchToMode "RenameTab"; TabNameInput 0; }
         bind "Alt e" { SwitchToMode "Resize"; }
         bind "Alt s" { SwitchToMode "Scroll"; }
-        bind "Alt d" { Detach; }
+        bind "Alt d" { Detach; SwitchToMode "Locked"; }
         bind "Alt q" { Quit; }
     }
 
