@@ -1,0 +1,12 @@
+// ~/.config/zellij/layouts/dev-agentic.kdl
+
+layout {
+    pane size=1 borderless=true {
+        plugin location="compact-bar"
+    }
+
+    pane split_direction="horizontal" {
+        pane name="hx" command="hx" focus=true
+        pane name="opencode" command="opencode"
+    }
+}

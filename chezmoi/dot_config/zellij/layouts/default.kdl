@@ -5,5 +5,5 @@ layout {
         plugin location="compact-bar"
     }
 
-    pane
+    pane focus=true
 }

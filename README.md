@@ -101,6 +101,9 @@ That delivers the auth callback to the OpenCode process running inside the VM.
 ## Daily Use
 
 - Open the dev shell with `,dev`
+- Open a project tab from `zoxide` with `,zlayout [default|dev|dev-agentic]`
+- Open a `dev` project tab with `,zdev`
+- Open a `dev-agentic` project tab with `,zagent`
 - Re-apply the current machine config with `,chezmoi-init`
 - Open `,cheatsheet` for the terminal tool quick reference
 - Show the VM IP with `,vm-ip`

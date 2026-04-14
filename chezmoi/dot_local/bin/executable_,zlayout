@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v zoxide >/dev/null 2>&1; then
+	echo "Error: zoxide is required but was not found on PATH." >&2
+	exit 1
+fi
+
+if ! command -v zellij >/dev/null 2>&1; then
+	echo "Error: zellij is required but was not found on PATH." >&2
+	exit 1
+fi
+
+layout="${1:-default}"
+if [[ $# -gt 0 ]]; then
+	shift
+fi
+
+project_dir="$(zoxide query -i "$@")"
+if [[ -z "$project_dir" ]]; then
+	exit 0
+fi
+
+project_name="$(basename "$project_dir")"
+
+if [[ -n "${ZELLIJ:-}" ]]; then
+	exec zellij action new-tab --layout "$layout" --cwd "$project_dir" --name "$project_name"
+fi
+
+echo "Error: ,zlayout opens a new tab in the current Zellij session. Start it from inside Zellij." >&2
+exit 1
