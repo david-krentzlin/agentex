@@ -18,20 +18,6 @@ keybinds {
     unbind "Ctrl g"
 
     normal {
-        bind "Alt w" {
-            LaunchOrFocusPlugin "session-manager" {
-                floating true
-                move_to_focused_tab true
-            }
-            SwitchToMode "Locked"
-        }
-        bind "Alt l" {
-            LaunchOrFocusPlugin "layout-manager" {
-                floating true
-                move_to_focused_tab true
-            }
-            SwitchToMode "Locked"
-        }
         bind "Alt x" { CloseFocus; SwitchToMode "Locked"; }
         bind "Alt q" { CloseTab; SwitchToMode "Locked"; }
         bind "Alt z" { ToggleFocusFullscreen; SwitchToMode "Locked"; }
@@ -57,18 +43,6 @@ keybinds {
 
     locked {
         bind "Alt a" { SwitchToMode "Normal"; }
-        bind "Alt w" {
-            LaunchOrFocusPlugin "session-manager" {
-                floating true
-                move_to_focused_tab true
-            }
-        }
-        bind "Alt l" {
-            LaunchOrFocusPlugin "layout-manager" {
-                floating true
-                move_to_focused_tab true
-            }
-        }
         bind "Alt x" { CloseFocus; }
         bind "Alt q" { CloseTab; }
         bind "Alt z" { ToggleFocusFullscreen; }
