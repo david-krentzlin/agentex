@@ -28,6 +28,7 @@ keybinds {
         bind "Alt x" { CloseFocus; SwitchToMode "Locked"; }
         bind "Alt q" { CloseTab; SwitchToMode "Locked"; }
         bind "Alt z" { ToggleFocusFullscreen; SwitchToMode "Locked"; }
+        bind "Alt v" { NewFloatingPane; SwitchToMode "Locked"; }
         bind "Alt n" { NewPane; SwitchToMode "Locked"; }
         bind "Alt -" { NewPane "Down"; SwitchToMode "Locked"; }
         bind "Alt \\" { NewPane "Right"; SwitchToMode "Locked"; }
@@ -52,6 +53,7 @@ keybinds {
         bind "Alt x" { CloseFocus; }
         bind "Alt q" { CloseTab; }
         bind "Alt z" { ToggleFocusFullscreen; }
+        bind "Alt v" { NewFloatingPane; }
     }
 
     shared_except "locked" {
