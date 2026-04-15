@@ -23,7 +23,7 @@ else
 fi
 
 if [[ -n "${ZELLIJ:-}" ]]; then
-	exec zellij run --floating --close-on-exit --name markdown --x "7%" --y "7%" --width "86%" --height "86%" --cwd "$(dirname "$file")" -- "${glow_cmd[@]}" -s dark "$file"
+	exec zellij run --floating --close-on-exit --name markdown --x "7%" --y "7%" --width "86%" --height "86%" --cwd "$(dirname "$file")" -- "${glow_cmd[@]}" -p -s dark "$file"
 fi
 
-exec "${glow_cmd[@]}" -s dark "$file"
+exec "${glow_cmd[@]}" -p -s dark "$file"
