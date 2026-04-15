@@ -1,8 +1,6 @@
 {{- $host := not .develop -}}
 {{- $darwin := eq .chezmoi.os "darwin" -}}
-{{- $needsNeovim := .develop -}}
 {{- $needsTaskwarrior := false -}}
-{{- if hasKey . "needs_neovim" }}{{- $needsNeovim = .needs_neovim }}{{- end }}
 {{- if hasKey . "needs_taskwarrior" }}{{- $needsTaskwarrior = .needs_taskwarrior }}{{- end }}
 
 {{- if not $host }}
@@ -40,8 +38,4 @@ Library/Application Support/lazygit/config.yml
 .taskrc.d
 .taskrc.d/**
 .local/bin/,task-popup
-{{- end }}
-
-{{- if not $needsNeovim }}
-.config/zsh/rc.d/30_nvim
 {{- end }}

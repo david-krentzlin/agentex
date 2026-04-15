@@ -1,10 +1,8 @@
 {{- $developAnswer := promptStringOnce . "develop" "Will you develop on this machine" | trim | lower -}}
 {{- $needsOpencodeAnswer := promptStringOnce . "needs_opencode" "Will you need opencode on this machine" | trim | lower -}}
-{{- $needsNeovimAnswer := promptStringOnce . "needs_neovim" "Will you need Neovim on this machine" | trim | lower -}}
 {{- $needsTaskwarriorAnswer := promptStringOnce . "needs_taskwarrior" "Should Taskwarrior be installed on this machine" | trim | lower -}}
 {{- $develop := or (eq $developAnswer "y") (eq $developAnswer "yes") (eq $developAnswer "true") (eq $developAnswer "1") -}}
 {{- $needsOpencode := or (eq $needsOpencodeAnswer "y") (eq $needsOpencodeAnswer "yes") (eq $needsOpencodeAnswer "true") (eq $needsOpencodeAnswer "1") -}}
-{{- $needsNeovim := or (eq $needsNeovimAnswer "y") (eq $needsNeovimAnswer "yes") (eq $needsNeovimAnswer "true") (eq $needsNeovimAnswer "1") -}}
 {{- $needsTaskwarrior := or (eq $needsTaskwarriorAnswer "y") (eq $needsTaskwarriorAnswer "yes") (eq $needsTaskwarriorAnswer "true") (eq $needsTaskwarriorAnswer "1") -}}
 {{- $buildHelixFromSource := false -}}
 {{- if $develop -}}
@@ -12,26 +10,11 @@
 {{- $buildHelixFromSource = or (eq $buildHelixFromSourceAnswer "y") (eq $buildHelixFromSourceAnswer "yes") (eq $buildHelixFromSourceAnswer "true") (eq $buildHelixFromSourceAnswer "1") -}}
 {{- end -}}
 {{- $workUsername := promptStringOnce . "work_username" "Work username (leave blank if not applicable)" -}}
-{{- $myNvimEnv := "" -}}
-{{- if $needsNeovim -}}
-{{- $myNvimEnvAnswer := promptStringOnce . "mynvim_env" "Neovim environment (work/private)" | trim | lower -}}
-{{- if eq $myNvimEnvAnswer "work" -}}
-{{- $myNvimEnv = "work" -}}
-{{- else if eq $myNvimEnvAnswer "private" -}}
-{{- $myNvimEnv = "private" -}}
-{{- else if ne $workUsername "" -}}
-{{- $myNvimEnv = "work" -}}
-{{- else -}}
-{{- $myNvimEnv = "private" -}}
-{{- end -}}
-{{- end -}}
 [data]
 develop = {{ $develop }}
 needs_opencode = {{ $needsOpencode }}
-needs_neovim = {{ $needsNeovim }}
 needs_taskwarrior = {{ $needsTaskwarrior }}
 build_helix_from_source = {{ $buildHelixFromSource }}
-mynvim_env = {{ $myNvimEnv | quote }}
 name = {{ promptStringOnce . "name" "Git author name" | quote }}
 email = {{ promptStringOnce . "email" "Git author email" | quote }}
 github_username = {{ promptStringOnce . "github_username" "GitHub username" | quote }}

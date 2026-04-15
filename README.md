@@ -20,7 +20,6 @@ When `chezmoi` prompts on the host, answer:
 
 - `Will you develop on this machine?` -> `no`
 - `Will you need opencode on this machine?` -> `no`
-- `Will you need Neovim on this machine?` -> `no`
 - fill in `Git author name`, `Git author email`, `GitHub username`, and `Work username`
 
 #### VM as `dev`
@@ -48,9 +47,7 @@ When `chezmoi` prompts as `dev`, answer:
 
 - `Will you develop on this machine?` -> `yes`
 - `Will you need opencode on this machine?` -> `yes` if you want OpenCode in the VM, otherwise `no`
-- `Will you need Neovim on this machine?` -> `yes`
 - `Should Helix be built from source on this machine?` -> `yes` if you want source-built Helix
-- `Neovim environment (work/private)` -> `work`
 - fill in the same identity values as on the host
 
 Open the VM as `dev` when you need a shell.
@@ -66,8 +63,6 @@ Existing VMs created before the login-shell fix may still have `/bin/bash` as `d
 Keep repos under `~/code` in the VM.
 
 `chezmoi` can read this repo directly from GitHub because the repo root now contains `.chezmoiroot` pointing at `chezmoi/`.
-
-If `Will you need Neovim on this machine?` is `yes`, `chezmoi` also keeps a shallow clone of `https://codeberg.org/certainty/mynvim` at `~/.config/nvim`.
 
 Every machine also gets:
 
@@ -113,7 +108,7 @@ That delivers the auth callback to the OpenCode process running inside the VM.
 - Create the VM from the host with `,create-vm`
 - Keep repos under `~/code` on the VM
 - Pull and apply host changes with `,chezmoi-update`
-- Pull and apply VM changes with `,chezmoi-update` as `dev`, including `mynvim` when enabled
+- Pull and apply VM changes with `,chezmoi-update` as `dev`
 - Run `,setup-scala` in the VM after syncing JFrog credentials when you need Scala/Metals tooling
 - Clone GitHub repos via SSH into `~/code/github/<owner>/<repo>` with `,ghclone owner/repository`
 - Use `,ghotspots`, `,gauthors`, `,gbugs`, `,gactivity`, `,gfire`, and `,gbranches` for quick git repo diagnostics

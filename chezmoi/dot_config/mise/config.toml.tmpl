@@ -1,5 +1,3 @@
-{{- $needsNeovim := .develop -}}
-{{- if hasKey . "needs_neovim" }}{{- $needsNeovim = .needs_neovim }}{{- end }}
 {{- $needsTaskwarrior := false -}}
 {{- if hasKey . "needs_taskwarrior" }}{{- $needsTaskwarrior = .needs_taskwarrior }}{{- end }}
 {{- $buildHelixFromSource := false -}}
@@ -26,12 +24,6 @@ taskwarrior = "latest"
 {{- if not $linuxArm }}
 "github:kdheepak/taskwarrior-tui" = "latest"
 {{- end }}
-{{- end }}
-
-{{- if $needsNeovim }}
-neovim = "latest"
-tree-sitter="latest"
-
 {{- end }}
 
 {{- if .develop }}
