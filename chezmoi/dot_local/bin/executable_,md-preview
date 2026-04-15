@@ -12,6 +12,15 @@ if [[ ! -f "$file" ]]; then
 	exit 1
 fi
 
+case "$file" in
+	*.md|*.mdx|*.markdown|*.mdown|*.mkd)
+		;;
+	*)
+		echo "Error: ,md-preview only supports Markdown files: $file" >&2
+		exit 1
+		;;
+esac
+
 glow_cmd=()
 if [[ -x "$HOME/.local/share/mise/shims/glow" ]]; then
 	glow_cmd=("$HOME/.local/share/mise/shims/glow")
