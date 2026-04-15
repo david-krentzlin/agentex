@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -n "${ZELLIJ:-}" ]]; then
+	exec zellij run --floating --close-on-exit --block-until-exit --name lazygit --x "7%" --y "7%" --width "86%" --height "86%" --cwd "$PWD" -- lazygit
+fi
+
+exec lazygit

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 2 ]]; then
+	echo "Usage: ,hx-yazi <path> <chooser-file>" >&2
+	exit 1
+fi
+
+target="$1"
+chooser_file="$2"
+
+if [[ -z "$target" ]]; then
+	target="$PWD"
+fi
+
+cwd="$PWD"
+if [[ -f "$target" ]]; then
+	cwd="$(dirname "$target")"
+elif [[ -d "$target" ]]; then
+	cwd="$target"
+fi
+
+if [[ -n "${ZELLIJ:-}" ]]; then
+	exec zellij run --floating --close-on-exit --block-until-exit --name yazi --x "7%" --y "7%" --width "86%" --height "86%" --cwd "$cwd" -- yazi "$target" --chooser-file="$chooser_file"
+fi
+
+exec yazi "$target" --chooser-file="$chooser_file"

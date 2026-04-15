@@ -59,23 +59,19 @@ C-s = [":w"]
 D = ["ensure_selections_forward", "extend_to_line_end", "delete_selection"]
 C-e = [
   ":sh rm -f /tmp/hx-yazi-chooser",
-  ":insert-output yazi \"%{buffer_name}\" --chooser-file=/tmp/hx-yazi-chooser >/dev/tty",
+  ":sh ,hx-yazi \"%{buffer_name}\" /tmp/hx-yazi-chooser >/dev/tty",
   ":redraw",
   ":open %sh{cat /tmp/hx-yazi-chooser 2>/dev/null || echo ''}",
   ":reload-all",
 ]
 C-r = [
   ":write-all",
-  ":insert-output scooter --no-stdin >/dev/tty",
+  ":sh ,hx-scooter >/dev/tty",
   ":redraw",
   ":reload-all",
 ]
 C-g = [
-  ":new",
-  ":insert-output lazygit >/dev/tty",
-  ":set mouse false",
-  ":set mouse true",
-  ":buffer-close!",
+  ":sh ,hx-lazygit >/dev/tty",
   ":redraw",
   ":reload-all",
 ]
