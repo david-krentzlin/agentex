@@ -38,7 +38,8 @@ auto-format = true
 [[language]]
 name = "ruby"
 language-servers = ["ruby-lsp"]
-formatter = { command = "rufo", args = ["--simple-exit"] }
+# formatter = { command = "rufo", args = ["--simple-exit"] }
+# rely on formatter in lsp or project local .helix/language.toml
 auto-format = true
 
 [[language]]
