@@ -66,7 +66,8 @@ keybinds {
         }
 {{- if $needsTaskwarrior }}
         bind "Alt W" {
-            Run ",task-popup" {
+            Run "zsh" "-lc" ",task-popup" {
+                cwd "."
                 floating true
                 x "7%"
                 y "7%"
@@ -77,7 +78,8 @@ keybinds {
         }
 {{- end }}
         bind "Alt ?" {
-            Run ",cheatsheet" {
+            Run "zsh" "-lc" ",cheatsheet" {
+                cwd "."
                 floating true
                 x "7%"
                 y "7%"
@@ -162,7 +164,8 @@ keybinds {
         }
 {{- if $needsTaskwarrior }}
         bind "Alt W" {
-            Run ",task-popup" {
+            Run "zsh" "-lc" ",task-popup" {
+                cwd "."
                 floating true
                 x "7%"
                 y "7%"
@@ -173,7 +176,8 @@ keybinds {
         }
 {{- end }}
         bind "Alt ?" {
-            Run ",cheatsheet" {
+            Run "zsh" "-lc" ",cheatsheet" {
+                cwd "."
                 floating true
                 x "7%"
                 y "7%"
