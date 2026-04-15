@@ -16,6 +16,8 @@ keybinds {
     unbind "Ctrl g"
 
     normal {
+        bind "Alt l" { SwitchToMode "Locked"; }
+
         // Floating tools
         bind "Alt F" {
             Run "zsh" "-l" {
