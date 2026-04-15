@@ -1,5 +1,6 @@
 data.location=~/Documents/tasks
 news.version=3.4.2
+include ~/.taskrc.d/catppuccin-mocha-black.theme
 
 # default urgencies
 #urgency.user.tag.next.coefficient           15.0 # +next tag

@@ -1,0 +1,22 @@
+# Catppuccin Mocha (black background) accents for Taskwarrior
+
+rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,scheduled,due.today,due,blocked,blocking,recurring,tagged,uda.
+
+color.header=#89b4fa
+color.footnote=#7f849c
+color.warning=bold #f38ba8
+color.error=#11111b on #f38ba8
+color.alternate=on color235
+
+color.active=#89b4fa on color0
+color.recurring=#cba6f7
+color.scheduled=on color0
+color.blocked=#bac2de on color8
+color.blocking=#11111b on #89b4fa
+
+color.tag.next=#89b4fa
+color.tagged=
+
+color.due.today=#f38ba8
+color.due=#f38ba8
+color.overdue=bold #f38ba8
