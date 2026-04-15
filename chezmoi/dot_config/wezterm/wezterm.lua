@@ -36,8 +36,17 @@ config.unix_domains = {
 
 config.default_gui_startup_args = { "connect", "unix" }
 
+local function activate_tab(index)
+	return wezterm.action_callback(function(window, pane)
+		window:perform_action(act.ActivateTab(index), pane)
+	end)
+end
+
 wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
-	local title = tostring(tab.tab_index + 1)
+	local title = tab.tab_title
+	if not title or title == "" then
+		title = tostring(tab.tab_index + 1)
+	end
 	local pane = tab.active_pane
 
 	-- Get the pane title which often contains git branch info
@@ -64,16 +73,24 @@ end)
 
 wezterm.on("gui-startup", function(cmd)
 	local cwd = cmd and cmd.cwd or nil
-	wezterm.mux.spawn_window({
+	local tab, _, window = wezterm.mux.spawn_window({
 		cwd = cwd,
-		workspace = "local",
 	})
+
+	tab:set_title("local")
+	window:spawn_tab({
+		cwd = cwd,
+	})
+
+	local tabs = window:tabs()
+	if tabs[2] then
+		tabs[2]:set_title("dev")
+	end
 end)
 
 config.keys = {
-	{ key = "L", mods = "SUPER|SHIFT", action = act.SwitchToWorkspace({ name = "local" }) },
-	{ key = "D", mods = "SUPER|SHIFT", action = act.SwitchToWorkspace({ name = "dev" }) },
-	{ key = "W", mods = "SUPER|SHIFT", action = act.ShowLauncherArgs({ flags = "FUZZY|WORKSPACES" }) },
+	{ key = "L", mods = "SUPER|SHIFT", action = activate_tab(0) },
+	{ key = "D", mods = "SUPER|SHIFT", action = activate_tab(1) },
 	{ key = "R", mods = "SUPER|SHIFT", action = act.ReloadConfiguration },
 	{ key = "+", mods = "SUPER", action = act.IncreaseFontSize },
 	{ key = "-", mods = "SUPER", action = act.DecreaseFontSize },

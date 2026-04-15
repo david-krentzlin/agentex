@@ -96,14 +96,13 @@ ZELLIJ
     web server and web sharing are disabled
 
 WEZTERM
-  Workspace shortcuts:
-    Super-Shift-l     switch to local
-    Super-Shift-d     switch to dev
-    Super-Shift-w     workspace picker
+  Tab shortcuts:
+    Super-Shift-l     switch to local tab
+    Super-Shift-d     switch to dev tab
     Super-Shift-r     reload config
 
   Notes:
-    wezterm starts in workspace local
+    wezterm starts with local and dev tabs
     default wezterm multiplexer bindings are disabled
 
   Project flows:
