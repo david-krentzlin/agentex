@@ -33,6 +33,7 @@ YAZI
     files open in Helix
     hidden files are shown by default
     preview pane is enabled
+    markdown files render with glow in the preview pane
 
 LAZYGIT
   Launch:
@@ -150,6 +151,7 @@ HELIX INTEGRATION YOU ALREADY HAVE
   Ctrl-e       open Yazi file chooser
   Ctrl-r       open Scooter
   Ctrl-g       open Lazygit
+  Space-m      preview current file in glow
 
 PROJECT TAB HELPERS
   ,zdev         zoxide picker -> new Zellij tab with dev layout

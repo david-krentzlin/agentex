@@ -21,3 +21,7 @@ max_height = 900
 
 [plugin]
 prepend_previewers = []
+
+[[plugin.prepend_previewers]]
+url = "*.md"
+run = 'piper -- if [ -x "$HOME/.local/share/mise/shims/glow" ]; then CLICOLOR_FORCE=1 "$HOME/.local/share/mise/shims/glow" -w=$w -s=dark "$1"; elif command -v mise >/dev/null 2>&1; then CLICOLOR_FORCE=1 mise exec "github:charmbracelet/glow@latest" -- glow -w=$w -s=dark "$1"; else echo "glow not found"; fi'

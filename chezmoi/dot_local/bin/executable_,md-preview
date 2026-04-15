@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+	echo "Usage: ,md-preview <markdown-file>" >&2
+	exit 1
+fi
+
+file="$1"
+if [[ ! -f "$file" ]]; then
+	echo "Error: file not found: $file" >&2
+	exit 1
+fi
+
+glow_cmd=()
+if [[ -x "$HOME/.local/share/mise/shims/glow" ]]; then
+	glow_cmd=("$HOME/.local/share/mise/shims/glow")
+elif command -v mise >/dev/null 2>&1; then
+	glow_cmd=(mise exec "github:charmbracelet/glow@latest" -- glow)
+else
+	echo "Error: glow is not installed. Run 'mise install github:charmbracelet/glow' or re-run your setup sync." >&2
+	exit 1
+fi
+
+if [[ -n "${ZELLIJ:-}" ]]; then
+	exec zellij run --floating --close-on-exit --name markdown --x "7%" --y "7%" --width "86%" --height "86%" --cwd "$(dirname "$file")" -- "${glow_cmd[@]}" -s dark "$file"
+fi
+
+exec "${glow_cmd[@]}" -s dark "$file"

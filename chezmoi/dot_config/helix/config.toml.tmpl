@@ -5,7 +5,7 @@ theme = "catppuccin_mocha_black"
 clipboard-provider = "pasteboard"
 {{- end }}
 default-yank-register = "+"
-auto-info = false
+auto-info = true
 end-of-line-diagnostics = "warning"
 color-modes = true
 trim-trailing-whitespace = true
@@ -85,6 +85,11 @@ C-g = [
 "}" = "goto_next_paragraph"
 
 [keys.normal.space]
+"m" = [
+  ":write-all",
+  ":sh ,md-preview \"%{buffer_name}\" >/dev/tty",
+  ":redraw",
+]
 "*" = [
   "move_prev_word_start",
   "move_next_word_end",
