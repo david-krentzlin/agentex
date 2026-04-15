@@ -112,6 +112,7 @@ WEZTERM
     ,zdev       pick project with zoxide, open dev tab there
     ,zagent     pick project with zoxide, open dev-agentic tab there
     ,zlayout    pick project with zoxide, choose layout explicitly
+    ,zj [name]  attach/create zellij session, default local
 
 SCOOTER
   Launch:

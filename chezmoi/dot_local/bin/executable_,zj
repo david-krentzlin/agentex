@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v zellij >/dev/null 2>&1; then
+	echo "Error: zellij is required but was not found on PATH." >&2
+	exit 1
+fi
+
+session="${1:-local}"
+
+exec zellij attach -c "$session"
