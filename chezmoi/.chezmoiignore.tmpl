@@ -1,10 +1,6 @@
 {{- $darwin := eq .chezmoi.os "darwin" -}}
-{{- $needsTaskwarrior := .taskwarrior -}}
-{{- $manageLimaVMsFromThisHost := .manage_lima_vms_from_this_host -}}
-{{- $hasGui := .has_gui -}}
-{{- $languageScala := .language_scala -}}
 
-{{- if or  (not $manageLimaVMsFromThisHost) }}
+{{- if or  (not .manage_lima_vms_from_this_host) }}
 .local/bin/,vm-shell
 .local/bin/,vm-create
 .local/bin/,vm-sync-jfrog
@@ -12,7 +8,7 @@
 .local/bin/,vm-open
 {{- end }}
 
-{{- if not $hasGui }}
+{{- if not .has_gui }}
 .config/wezterm
 .config/wezterm/**
 {{- end }}
@@ -29,18 +25,18 @@
 Library/Application Support/lazygit/config.yml
 {{- end }}
 
-{{- if not .needs_opencode }}
+{{- if not .opencode }}
 .config/opencode
 .config/opencode/**
 {{- end }}
 
-{{- if not $needsTaskwarrior }}
+{{- if not .taskwarrior }}
 .taskrc
 .taskrc.d
 .taskrc.d/**
 .local/bin/,task-popup
 {{- end }}
 
-{{- if not $languageScala }}
+{{- if not .languag_scala }}
 .local/bin/,setup-scala
 {{- end }}
