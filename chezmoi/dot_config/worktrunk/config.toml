@@ -27,12 +27,12 @@
 #
 # # Inside the repository
 # # Creates: ~/code/myproject/.worktrees/feature-auth
-# worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
+worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
 
 #
 # # Centralized worktrees directory
 # # Creates: ~/worktrees/myproject/feature-auth
-worktree-path = "~/NewWork/Code/worktrees/{{ repo }}.{{ branch | sanitize }}"
+# worktree-path = "~/NewWork/Code/worktrees/{{ repo }}.{{ branch | sanitize }}"
 #
 # `~` expands to the home directory. Relative paths are relative to the repository root.
 #

@@ -3,8 +3,16 @@
 {{- $needsTaskwarrior := promptBoolOnce . "needs_taskwarrior" "Should Taskwarrior be installed on this machine" -}}
 {{- $manageLimaVmsFromThisHost := promptBoolOnce . "manage_lima_vms_from_this_host" "Do you manage Lima VMs from this host" -}}
 {{- $buildHelixFromSource := false -}}
+{{- $languageGo := false -}}
+{{- $languageRuby := false -}}
+{{- $languageScala := false -}}
+{{- $languageRust := false -}}
 {{- if $develop -}}
 {{- $buildHelixFromSource = promptBoolOnce . "build_helix_from_source" "Should Helix be built from source on this machine" -}}
+{{- $languageGo = promptBoolOnce . "language_go" "Should Go toolchains be installed on this machine" -}}
+{{- $languageRuby = promptBoolOnce . "language_ruby" "Should Ruby toolchains be installed on this machine" -}}
+{{- $languageScala = promptBoolOnce . "language_scala" "Should Scala toolchains be installed on this machine" -}}
+{{- $languageRust = promptBoolOnce . "language_rust" "Should Rust toolchains be installed on this machine" -}}
 {{- end -}}
 {{- $workUsername := promptStringOnce . "work_username" "Work username (leave blank if not applicable)" -}}
 [data]
@@ -13,6 +21,10 @@ needs_opencode = {{ $needsOpencode }}
 needs_taskwarrior = {{ $needsTaskwarrior }}
 manage_lima_vms_from_this_host = {{ $manageLimaVmsFromThisHost }}
 build_helix_from_source = {{ $buildHelixFromSource }}
+language_go = {{ $languageGo }}
+language_ruby = {{ $languageRuby }}
+language_scala = {{ $languageScala }}
+language_rust = {{ $languageRust }}
 name = {{ promptStringOnce . "name" "Git author name" | quote }}
 email = {{ promptStringOnce . "email" "Git author email" | quote }}
 github_username = {{ promptStringOnce . "github_username" "GitHub username" | quote }}

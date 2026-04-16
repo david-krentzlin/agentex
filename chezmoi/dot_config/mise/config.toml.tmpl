@@ -2,6 +2,14 @@
 {{- if hasKey . "needs_taskwarrior" }}{{- $needsTaskwarrior = .needs_taskwarrior }}{{- end }}
 {{- $buildHelixFromSource := false -}}
 {{- if hasKey . "build_helix_from_source" }}{{- $buildHelixFromSource = .build_helix_from_source }}{{- end }}
+{{- $languageGo := false -}}
+{{- if hasKey . "language_go" }}{{- $languageGo = .language_go }}{{- end }}
+{{- $languageRuby := false -}}
+{{- if hasKey . "language_ruby" }}{{- $languageRuby = .language_ruby }}{{- end }}
+{{- $languageScala := false -}}
+{{- if hasKey . "language_scala" }}{{- $languageScala = .language_scala }}{{- end }}
+{{- $languageRust := false -}}
+{{- if hasKey . "language_rust" }}{{- $languageRust = .language_rust }}{{- end }}
 
 [settings]
 experimental = true
@@ -28,10 +36,7 @@ taskwarrior = "latest"
 
 {{- if .develop }}
 bun = "latest"
-go = "latest"
-ruby = "latest"
 node = "lts"
-rust = "stable"
 shfmt = "latest"
 yq = "latest"
 "github:max-sixty/worktrunk" = { version = "latest", bin = "wt" }
@@ -39,16 +44,10 @@ yq = "latest"
 "github:charmbracelet/glow" = "latest"
 "github:sxyazi/yazi" = "latest"
 helm-ls = "latest"
-"go:golang.org/x/tools/gopls" = "latest"
-"go:mvdan.cc/gofumpt" = "latest"
-"go:github.com/go-delve/delve/cmd/dlv" = "latest"
 "github:thomasschafer/scooter" = "latest"
 "github:dandavison/delta" = "latest"
 "github:jesseduffield/lazygit" = "latest"
 "github:zellij-org/zellij" = "0.44.1"
-"github:golangci/golangci-lint" = "latest"
-"gem:ruby-lsp" = { version = "latest", depends = ["ruby"] }
-"gem:rufo" = { version = "latest", depends = ["ruby"] }
 "npm:@olrtg/emmet-language-server" = { version = "latest", bin = "emmet-ls" }
 "npm:prettier" = "latest"
 "npm:yaml-language-server" = "latest"
@@ -57,10 +56,30 @@ helm-ls = "latest"
 "npm:dockerfile-language-server-nodejs" = "latest"
 "npm:@microsoft/compose-language-service" = "latest"
 
+{{- if $languageGo }}
+go = "latest"
+"go:golang.org/x/tools/gopls" = "latest"
+"go:mvdan.cc/gofumpt" = "latest"
+"go:github.com/go-delve/delve/cmd/dlv" = "latest"
+"github:golangci/golangci-lint" = "latest"
+{{- end }}
+
+{{- if $languageRuby }}
+ruby = "latest"
+"gem:ruby-lsp" = { version = "latest", depends = ["ruby"] }
+"gem:rufo" = { version = "latest", depends = ["ruby"] }
+{{- end }}
+
+{{- if or $languageRust $buildHelixFromSource }}
+rust = "stable"
+{{- end }}
+
+{{- if $languageScala }}
 java = "latest"
 "github:scalameta/scalafmt" = "latest"
 [tools."github:coursier/coursier"]
   version = "latest"
   asset_pattern = "coursier"
   bin = "cs"
+{{- end }}
 {{- end }}

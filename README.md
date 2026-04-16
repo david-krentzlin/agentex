@@ -50,6 +50,7 @@ When `chezmoi` prompts as `dev`, answer:
 - `Do you manage Lima VMs from this host` -> `no`
 - `Will you need opencode on this machine?` -> `yes` if you want OpenCode in the VM, otherwise `no`
 - `Should Helix be built from source on this machine?` -> `yes` if you want source-built Helix
+- language toolchain prompts (`Go`, `Ruby`, `Scala`, `Rust`) appear only when `Will you develop on this machine?` is `yes`
 - fill in the same identity values as on the host
 
 Open the VM as `dev` when you need a shell.
@@ -208,7 +209,9 @@ This installs or updates the Scala toolchain expected by the VM setup:
 
 `chezmoi` now manages the Helix, Zellij, Lazygit, Yazi, and Scooter config from this repo directly.
 
-On development machines, `mise install` also pulls the editor-side tools managed here, including `lazygit`, `zellij`, `yazi`, `scooter`, `delta`, `golangci-lint`, `prettier`, and `emmet-ls`.
+On development machines, `mise install` always pulls the generic editor-side tools managed here, including `lazygit`, `zellij`, `yazi`, `scooter`, `delta`, `prettier`, and `emmet-ls`.
+
+Language-specific toolchains are installed from the `chezmoi` language prompts (`Go`, `Ruby`, `Scala`, `Rust`) only when selected.
 
 If you opt into source-built Helix in the chezmoi prompts, Helix is built from the official repository on both Linux and macOS after Rust is available, so run `chezmoi apply` once after `mise install` during bootstrap.
 
