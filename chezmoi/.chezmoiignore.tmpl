@@ -2,6 +2,7 @@
 {{- $needsTaskwarrior := .needs_taskwarrior -}}
 {{- $manageLimaVMsFromThisHost := .manage_lima_vms_from_this_host -}}
 {{- $hasGui := .has_gui -}}
+{{- $languageScala := .language_scala -}}
 
 {{- if or .develop (not $manageLimaVMsFromThisHost) }}
 .local/bin/,vm-shell
@@ -47,4 +48,8 @@ Library/Application Support/lazygit/config.yml
 .taskrc.d
 .taskrc.d/**
 .local/bin/,task-popup
+{{- end }}
+
+{{- if not $languageScala }}
+.local/bin/,setup-scala
 {{- end }}

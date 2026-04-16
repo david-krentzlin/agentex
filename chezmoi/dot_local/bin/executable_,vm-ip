@@ -25,7 +25,11 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-VM_IP="$(limactl shell --workdir /home/dev "$INSTANCE_NAME" sh -lc "ip -j -4 addr show dev lima0 | jq -r '.[0].addr_info | map(select(.family == \"inet\")) | .[0].local // empty'")"
+VM_ADDR_OUTPUT="$(limactl shell --workdir /home/dev "$INSTANCE_NAME" ip -o -4 addr show dev lima0 || true)"
+VM_IP=""
+if [[ "$VM_ADDR_OUTPUT" =~ inet[[:space:]]+([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/ ]]; then
+	VM_IP="${BASH_REMATCH[1]}"
+fi
 
 if [[ -z "$VM_IP" ]]; then
 	echo "Error: no IPv4 address found for interface lima0 on VM '$INSTANCE_NAME'. Ensure vzNAT is enabled and restart the VM." >&2
