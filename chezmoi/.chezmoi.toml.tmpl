@@ -27,8 +27,9 @@ language_go = {{ $languageGo }}
 language_ruby = {{ $languageRuby }}
 language_scala = {{ $languageScala }}
 language_rust = {{ $languageRust }}
-name = {{ promptStringOnce . "name" "Git author name" | quote }}
-email = {{ promptStringOnce . "email" "Git author email" | quote }}
+git_author_name = {{ promptStringOnce . "git_author_name" "Git author name" | quote }}
+git_email = {{ promptStringOnce . "git_email" "Git author email" | quote }}
+git_ssh_key_name = {{ promptStringOnce . "git_ssh_key_name"  "Name of the ssh key"  | quote }}
 github_username = {{ promptStringOnce . "github_username" "GitHub username" | quote }}
 work_username = {{ $workUsername | quote }}
 
