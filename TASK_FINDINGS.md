@@ -25,27 +25,28 @@ This file captures concrete findings and an execution plan for:
 
 ### P1 - Keybinding collisions and contradictions
 
-1. Terminal-level `Alt` collisions between Ghostty and Zellij
+1. Terminal-level `Alt` collisions between Ghostty and Zellij (resolved)
 
 - Evidence:
   - `chezmoi/dot_config/ghostty/config:67`
   - `chezmoi/dot_config/zellij/config.kdl.tmpl:91`
-- Problem: many `Alt` combinations are bound in both layers, so terminal binds can swallow keys before Zellij sees them.
-- Solution: remove ghostty config an rely on wezterm
+- Problem (historical): many `Alt` combinations were bound in both layers, so terminal binds could swallow keys before Zellij saw them.
+- Outcome: Ghostty config was removed; WezTerm is now the terminal layer, eliminating this collision path.
 
-2. Contradictory Ghostty binding for `alt+n`
+2. Contradictory Ghostty binding for `alt+n` (resolved)
 
 - Evidence:
   - `chezmoi/dot_config/ghostty/config:94`
   - `chezmoi/dot_config/ghostty/config:129`
-- Problem: `alt+n` is assigned and later unbound.
-- Solutin: remove ghostty config and rely on wezterm
+- Problem (historical): `alt+n` was assigned and later unbound.
+- Outcome: removing Ghostty config removed the contradictory mapping state.
 
-3. Helix `Ctrl-s` override shadows a built-in Helix behavior
+3. Helix `Ctrl-s` override shadows a built-in Helix behavior (resolved)
 
 - Evidence:
   - `chezmoi/dot_config/helix/config.toml.tmpl:51`
-- Problem: custom save mapping conflicts with an existing Helix keymap action.
+- Problem (historical): custom save mapping conflicted with an existing Helix keymap action.
+- Outcome: custom `Ctrl-s` and `Space w` save bindings were removed; save now uses `:w`.
 
 ### P1 - Zellij config duplication
 
@@ -124,12 +125,15 @@ This file captures concrete findings and an execution plan for:
 
 ## Phase 0 - Baseline
 
-- [ ] T0.1 Create a keybinding matrix document for Helix/Zellij/WezTerm. Also remove ghostty config to simplify.
+- [x] T0.1 Create a keybinding matrix document for Helix/Zellij/WezTerm. Also remove ghostty config to simplify.
+
+  - Outcome: added keybinding ownership matrix and removed Ghostty keybinding layer from active config.
 
   - Deliverable: `docs/keybinding-matrix.md`
   - Acceptance: each active keybind appears exactly once with owner tool.
 
-- [ ] T0.2 Render and inspect chezmoi output for representative contexts.
+- [x] T0.2 Render and inspect chezmoi output for representative contexts.
+  - Outcome: render matrix was documented for representative host/vm contexts.
   - Contexts:
     - macOS host managing VM
     - Linux VM dev user
@@ -156,18 +160,21 @@ This file captures concrete findings and an execution plan for:
 
 ## Phase 2 - Keybinding Conflict Resolution
 
-- [ ] T2.1 Decide owner for `Alt` pane/tab navigation in terminal sessions.
+- [x] T2.1 Decide owner for `Alt` pane/tab navigation in terminal sessions.
   - Option A: Zellij owns `Alt` navigation; Ghostty moves to `super` or leader combos.
   - Option B: Ghostty owns `Alt`; Zellij is remapped.
   - Acceptance: no duplicated hotkeys across layers for shared actions.
+  - Outcome: owner decision landed on Zellij/WezTerm layering after Ghostty removal.
 
-- [ ] T2.2 Remove contradictory Ghostty binds.
+- [x] T2.2 Remove contradictory Ghostty binds.
   - File: `chezmoi/dot_config/ghostty/config`
   - Acceptance: no key is both set and unbound in the same file.
+  - Outcome: contradictory Ghostty binds were removed by removing Ghostty config from active setup.
 
-- [ ] T2.3 Replace Helix `Ctrl-s` with a non-conflicting save mapping.
+- [x] T2.3 Replace Helix `Ctrl-s` with a non-conflicting save mapping.
   - File: `chezmoi/dot_config/helix/config.toml.tmpl`
   - Acceptance: save action remains easy and `Ctrl-s` no longer shadows existing Helix behavior.
+  - Outcome: Helix no longer overrides `Ctrl-s`; save uses `:w`.
 
 ## Phase 3 - Shell Consistency Cleanup
 
@@ -234,13 +241,14 @@ This file captures concrete findings and an execution plan for:
   - File: `chezmoi/.chezmoi.toml.tmpl`
   - Acceptance: downstream templates consume normalized fields only.
 
-- [ ] T6.2 Remove repeated `hasKey` boilerplate where defaults can be normalized.
+- [x] T6.2 Remove repeated `hasKey` boilerplate where defaults can be normalized.
   - Files:
     - `chezmoi/.chezmoiignore.tmpl`
     - `chezmoi/dot_config/mise/config.toml.tmpl`
     - `chezmoi/dot_taskrc.tmpl`
     - `chezmoi/.chezmoiscripts/run_after_taskwarrior-linux.sh.tmpl`
   - Acceptance: repeated guard patterns are reduced.
+  - Outcome: repeated `hasKey` checks were collapsed via normalized defaults.
 
 - [x] T6.3 Remove bootstrap context artifact.
   - Change: removed `chezmoi/dot_config/home-sweet-home/bootstrap-context.toml.tmpl`.

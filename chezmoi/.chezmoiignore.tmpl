@@ -13,6 +13,9 @@
 
 {{- if .develop }}
 .config/zsh/rc.d/05_homebrew
+{{- if $darwin }}
+.config/zsh/rc.d/06_zsh_plugins
+{{- end }}
 .config/zsh/rc.d/10_java
 {{- end }}
 

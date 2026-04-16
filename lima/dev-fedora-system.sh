@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eux -o pipefail
 
-dnf install -y git curl sudo ca-certificates chezmoi zsh zsh-autosuggestions openssh-clients podman podman-compose ripgrep fd-find bat eza zoxide fzf jq tar unzip gzip make gcc gcc-c++ helm
+dnf install -y git curl sudo ca-certificates chezmoi zsh zsh-autosuggestions zsh-syntax-highlighting openssh-clients podman podman-compose ripgrep fd-find bat eza zoxide fzf jq tar unzip gzip make gcc gcc-c++ helm
 
 if ! grep -q '^dev:' /etc/subuid; then
 	usermod --add-subuids 100000-165535 dev
