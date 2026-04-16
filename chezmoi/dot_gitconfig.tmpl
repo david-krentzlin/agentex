@@ -1,11 +1,10 @@
-{{- $host := not .develop -}}
 {{- $work := ne .work_username "" -}}
 [user]
 	name = {{ .name | quote }}
 	email = {{ .email | quote }}
-{{- if and $host $work }}
+{{- if and (not .develop) $work }}
 	signingkey = ~/.ssh/id_rsa.pub
-{{- else if not $host }}
+{{- else if .develop }}
 	signingkey = ~/.ssh/id_ed25519.pub
 {{- end }}
 
@@ -23,7 +22,7 @@
 	excludesfile = ~/.gitignore
 	editor = hx
 
-{{- if and $host $work }}
+{{- if and (not .develop) $work }}
 [commit]
 	gpgsign = true
 
@@ -36,7 +35,7 @@
 [credential]
 	helper = osxkeychain
 
-{{- else if not $host }}
+{{- else if .develop }}
 [commit]
 	gpgsign = true
 

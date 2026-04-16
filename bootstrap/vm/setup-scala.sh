@@ -97,7 +97,7 @@ fi
 if [[ -f "$sbt_credentials" ]]; then
 	export SBT_CREDENTIALS="$sbt_credentials"
 else
-	echo "Warning: $sbt_credentials is missing. Sync JFrog credentials first with ,sync-jfrog-to-vm if sbt or metals resolution fails." >&2
+	echo "Warning: $sbt_credentials is missing. Sync JFrog credentials first with ,vm-sync-jfrog if sbt or metals resolution fails." >&2
 fi
 
 ensure_mise_tool_active java temurin-21

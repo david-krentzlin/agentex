@@ -13,12 +13,13 @@ Install Homebrew first. `chezmoi` will run `brew bundle` once on the macOS host.
 
 ```bash
 chezmoi init --apply david-krentzlin/home-sweet-home
-,create-vm
+,vm-create
 ```
 
 When `chezmoi` prompts on the host, answer:
 
 - `Will you develop on this machine?` -> `no`
+- `Do you manage Lima VMs from this host` -> `yes`
 - `Will you need opencode on this machine?` -> `no`
 - fill in `Git author name`, `Git author email`, `GitHub username`, and `Work username`
 
@@ -27,7 +28,7 @@ When `chezmoi` prompts on the host, answer:
 ```bash
 limactl shell --tty --reconnect --workdir /home/dev --shell /usr/bin/zsh dev
 # or
-,dev
+,vm-shell
 ```
 
 Run inside the VM as `dev`:
@@ -46,6 +47,7 @@ This also installs the terminal IDE support managed here for Helix, Zellij, Lazy
 When `chezmoi` prompts as `dev`, answer:
 
 - `Will you develop on this machine?` -> `yes`
+- `Do you manage Lima VMs from this host` -> `no`
 - `Will you need opencode on this machine?` -> `yes` if you want OpenCode in the VM, otherwise `no`
 - `Should Helix be built from source on this machine?` -> `yes` if you want source-built Helix
 - fill in the same identity values as on the host
@@ -53,10 +55,10 @@ When `chezmoi` prompts as `dev`, answer:
 Open the VM as `dev` when you need a shell.
 
 ```bash
-,dev
+,vm-shell
 ```
 
-Use `,dev` instead of raw `limactl shell` commands.
+Use `,vm-shell` instead of raw `limactl shell` commands.
 
 Existing VMs created before the login-shell fix may still have `/bin/bash` as `dev`'s login shell. Recreate the VM or run `sudo usermod -s /usr/bin/zsh dev` inside it once.
 
@@ -97,7 +99,7 @@ That delivers the auth callback to the OpenCode process running inside the VM.
 
 ## Daily Use
 
-- Open the dev shell with `,dev`
+- Open the dev shell with `,vm-shell`
 - Open a project tab from `zoxide` with `,zlayout [default|dev|dev-agentic]`
 - Open a `dev` project tab with `,zdev`
 - Open a `dev-agentic` project tab with `,zagent`
@@ -105,7 +107,7 @@ That delivers the auth callback to the OpenCode process running inside the VM.
 - Open `,cheatsheet` for the terminal tool quick reference
 - Show the VM IP with `,vm-ip`
 - Open a VM-hosted service in the browser with `,vm-open 9000`
-- Create the VM from the host with `,create-vm`
+- Create the VM from the host with `,vm-create`
 - Keep repos under `~/code` on the VM
 - Pull and apply host changes with `,chezmoi-update`
 - Pull and apply VM changes with `,chezmoi-update` as `dev`
@@ -163,13 +165,13 @@ Notes:
 
 JFrog credentials stay sourced from 1Password on the host and are copied explicitly into the VM when needed.
 
-The host shell already provides `,jfrog_oidc_env`, which exports `JFROG_OIDC_USER` and `JFROG_OIDC_TOKEN`.
+The host shell provides `,jfrog_oidc_env` when `Do you manage Lima VMs from this host` is `yes`; it exports `JFROG_OIDC_USER` and `JFROG_OIDC_TOKEN`.
 
 Sync credentials for a VM user with:
 
 ```bash
 ,jfrog_oidc_env
-,sync-jfrog-to-vm --host your.jfrog.example.com
+,vm-sync-jfrog --host your.jfrog.example.com
 ```
 
 The default realm is `Artifactory Realm`. If `sbt` itself needs authenticated bootstrap access and your setup uses a different realm, pass `--realm` explicitly.
