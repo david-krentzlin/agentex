@@ -20,7 +20,7 @@ case "$file" in
     ;;
 esac
 
-if [ ! command -v "glow" ]; then
+if [[ ! command -v "glow" ]]; then
   echo "Error: glow is not installed. Run 'mise install github:charmbracelet/glow' or re-run your setup sync." >&2
   exit 1
 fi
